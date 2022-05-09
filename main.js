@@ -69,7 +69,7 @@ class Hoover extends utils.Adapter {
             }, this.config.interval * 60 * 1000);
             this.refreshTokenInterval = setInterval(() => {
                 this.refreshToken();
-            }, 22 * 60 * 60 * 1000);
+            }, 2 * 60 * 60 * 1000);
         }
     }
     async login() {
@@ -81,7 +81,12 @@ class Hoover extends utils.Adapter {
                 "Accept-Language": "de-de",
                 "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
             },
-            data: `message=%7B%22actions%22%3A%5B%7B%22id%22%3A%2281%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22${this.config.username}%22%2C%22password%22%3A%22${this.config.password}%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3DCAAAAYCl0iabMDAwMDAwMDAwMDAwMDAwAAAA7N-FPpQ5v6OxxPpREBB4s3pDGfbefk8Zj-ZAeAdbN3YGWyrbXR8BKtnQqVjR7bIcGRsKk9ndDAvaXDeXxXbrOFfqRHeMGis6GbvnFTxaKiDMZAPFFouuzqjJGpPrjoMKt9qfulpmuLFMp5GggcVJe3dSAgPuwnE5wIn4EH2ADW-kjJOBEkiVMHBdV4CIIphsSqkvNC8RbDhx4mbZrdZq_du0oKwHGu9Ok_a6e1RBz8LNy5IFWaLuXXM4RsptzAJ59VYQOCPtIC4-Hr5fi8qtRnN085DMpwF9qZz2zoVpjk0Pc8b1HzRSvjV2l8qFCmlgpZzHPWD2KDmd-R3Ixks7OEEL4yvuWEd4W6zDm9VUXOzi-4xXEE5pPlsu16CeG3KFf86drBlokOuGqL8hVM54FjHwOaFtNbmNXdzbuZpg19TxBs9pySZbz3wloPPeesWvkl9yV5ryGRvVZtJWBebJDTbNbkevFZ08a1bsiX8WqbIbSW3ZrxT_T-robv2E1qQS2EEiIxJwkqVqDlPKZeVhL2I78TUazJZECO-PHNiZHKxosngkY94Ymsidk4RO-t7Rf3ou-dqPE0QajVNWszVvcBufLCE4b5SMnaMIFpF9lnJw0f68Mfmh3K-VoM7N5vMbiCSipJnIFoJ5ohGtYBIB_mnLoGTEfjeNmcuoUbqc6Ok-pMdcvpzz6cnkpdkWyWnO_M3NCAtsB2triZu_bc7Wsew%253D%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=%7B%22mode%22%3A%22PROD%22%2C%22fwuid%22%3A%222yRFfs4WfGnFrNGn9C_dGg%22%2C%22app%22%3A%22siteforce%3AloginApp2%22%2C%22loaded%22%3A%7B%22APPLICATION%40markup%3A%2F%2Fsiteforce%3AloginApp2%22%3A%22PnuMahsrn7JWWgS2n6sUkQ%22%7D%2C%22dn%22%3A%5B%5D%2C%22globals%22%3A%7B%7D%2C%22ct%22%3A1%2C%22uad%22%3Afalse%7D&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253DCAAAAYCl0iabMDAwMDAwMDAwMDAwMDAwAAAA7N-FPpQ5v6OxxPpREBB4s3pDGfbefk8Zj-ZAeAdbN3YGWyrbXR8BKtnQqVjR7bIcGRsKk9ndDAvaXDeXxXbrOFfqRHeMGis6GbvnFTxaKiDMZAPFFouuzqjJGpPrjoMKt9qfulpmuLFMp5GggcVJe3dSAgPuwnE5wIn4EH2ADW-kjJOBEkiVMHBdV4CIIphsSqkvNC8RbDhx4mbZrdZq_du0oKwHGu9Ok_a6e1RBz8LNy5IFWaLuXXM4RsptzAJ59VYQOCPtIC4-Hr5fi8qtRnN085DMpwF9qZz2zoVpjk0Pc8b1HzRSvjV2l8qFCmlgpZzHPWD2KDmd-R3Ixks7OEEL4yvuWEd4W6zDm9VUXOzi-4xXEE5pPlsu16CeG3KFf86drBlokOuGqL8hVM54FjHwOaFtNbmNXdzbuZpg19TxBs9pySZbz3wloPPeesWvkl9yV5ryGRvVZtJWBebJDTbNbkevFZ08a1bsiX8WqbIbSW3ZrxT_T-robv2E1qQS2EEiIxJwkqVqDlPKZeVhL2I78TUazJZECO-PHNiZHKxosngkY94Ymsidk4RO-t7Rf3ou-dqPE0QajVNWszVvcBufLCE4b5SMnaMIFpF9lnJw0f68Mfmh3K-VoM7N5vMbiCSipJnIFoJ5ohGtYBIB_mnLoGTEfjeNmcuoUbqc6Ok-pMdcvpzz6cnkpdkWyWnO_M3NCAtsB2triZu_bc7Wsew%25253D%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null`,
+            data:
+                "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%2277%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
+                this.config.username +
+                "%22%2C%22password%22%3A%22" +
+                this.config.password +
+                "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3DCAAAAYCom7KXMDAwMDAwMDAwMDAwMDAwAAAA7OW-svpc80G0trDHf3_T9Z7SIt0oVscCqVBaxdbzhRsVqNj7_Y3aucDaj3We-mW-sgkQhMuVkxwqZXyDXAg5ollP0yKsEsAu3Mdf_o_g39neHU3KlOR7CoKWP_uTEURBkI-KbUq4M3CI8edOTK2wmd7e2hLfhulP6cF8esY5pHnVCRYVjYz7F1fUgfUIZFlgVqUAquELHd_9hFp8AiL74J_qEeis73qnwg7MmriIAwuDlPIaC0XDENLru7tKLNxDtr4XupX09yy1WULsqo5ZgfB50IX5ExxXaFo579xKkrlq75vTylrDMhcxAsGgzXX9BOH_6Kcg-5wLfYe3FHQgtnsppn-uz_RQK-nknjkPS1hGy1LHeOt9cvxUN05sJu_jgjarSpsRi07C2dlYsoMJktmrOYel290p9q1iD1GbMTzM1nNyBOPFUBNXomCYuPPBEIf-t6986zgl1qaRzGTX0QL2ECGNmCpcAhV-l614bYdAjdaTWAPxvJrR1MEP9jMO79Y36iXL-d1lGLrsfOhBVd60jJ3yMt9wh8cfLz99mLgjQ4DA9B2mOLSu3xvEjNIAKkzdCaepujnimburl1c3xk2Rw5ZjI-u8CXhYoQ15iMbrBRJCTQ22uT3F86orTYGfL_e3ScsoOf2SRnmFjvq-PLnTlZ-UFIX2rzzhi1gl73jLl4l_qjP7jRNvRCEqLIhGBIV-6CZ10qqfeMu0r04K3dI%253D%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=%7B%22mode%22%3A%22PROD%22%2C%22fwuid%22%3A%222yRFfs4WfGnFrNGn9C_dGg%22%2C%22app%22%3A%22siteforce%3AloginApp2%22%2C%22loaded%22%3A%7B%22APPLICATION%40markup%3A%2F%2Fsiteforce%3AloginApp2%22%3A%22PnuMahsrn7JWWgS2n6sUkQ%22%7D%2C%22dn%22%3A%5B%5D%2C%22globals%22%3A%7B%7D%2C%22ct%22%3A1%2C%22uad%22%3Afalse%7D&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253DCAAAAYCom7KXMDAwMDAwMDAwMDAwMDAwAAAA7OW-svpc80G0trDHf3_T9Z7SIt0oVscCqVBaxdbzhRsVqNj7_Y3aucDaj3We-mW-sgkQhMuVkxwqZXyDXAg5ollP0yKsEsAu3Mdf_o_g39neHU3KlOR7CoKWP_uTEURBkI-KbUq4M3CI8edOTK2wmd7e2hLfhulP6cF8esY5pHnVCRYVjYz7F1fUgfUIZFlgVqUAquELHd_9hFp8AiL74J_qEeis73qnwg7MmriIAwuDlPIaC0XDENLru7tKLNxDtr4XupX09yy1WULsqo5ZgfB50IX5ExxXaFo579xKkrlq75vTylrDMhcxAsGgzXX9BOH_6Kcg-5wLfYe3FHQgtnsppn-uz_RQK-nknjkPS1hGy1LHeOt9cvxUN05sJu_jgjarSpsRi07C2dlYsoMJktmrOYel290p9q1iD1GbMTzM1nNyBOPFUBNXomCYuPPBEIf-t6986zgl1qaRzGTX0QL2ECGNmCpcAhV-l614bYdAjdaTWAPxvJrR1MEP9jMO79Y36iXL-d1lGLrsfOhBVd60jJ3yMt9wh8cfLz99mLgjQ4DA9B2mOLSu3xvEjNIAKkzdCaepujnimburl1c3xk2Rw5ZjI-u8CXhYoQ15iMbrBRJCTQ22uT3F86orTYGfL_e3ScsoOf2SRnmFjvq-PLnTlZ-UFIX2rzzhi1gl73jLl4l_qjP7jRNvRCEqLIhGBIV-6CZ10qqfeMu0r04K3dI%25253D%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
@@ -134,8 +139,8 @@ class Hoover extends utils.Adapter {
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
-                if (res.data.includes("window.location.replace(")) {
-                    return res.data.split("window.location.replace('")[1].split('")')[0];
+                if (res.data.includes("window.location.replace('")) {
+                    return res.data.split("window.location.replace('")[1].split("')")[0];
                 }
                 this.log.error("Missing step3 url");
                 this.log.error(JSON.stringify(res.data));
@@ -152,15 +157,15 @@ class Hoover extends utils.Adapter {
             method: "get",
             url: "https://he-accounts.force.com" + step03Url,
             headers: {
-                Accept: "*/*",
+                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
                 "Accept-Language": "de-de",
-                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
             },
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
-                if (res.data.includes("window.location.replace(")) {
-                    return res.data.split("window.location.replace('")[1].split('")')[0];
+                if (!res.data.includes("oauth_error_code") && res.data.includes("window.location.replace(")) {
+                    return res.data.split("window.location.replace('")[1].split("')")[0];
                 }
                 this.log.error("Missing step4 url");
                 this.log.error(JSON.stringify(res.data));
@@ -173,7 +178,7 @@ class Hoover extends utils.Adapter {
             return;
         }
 
-        this.session = qs.parse(step04Url.split("?")[1]);
+        this.session = qs.parse(step04Url.split("#")[1]);
 
         const awsLogin = await this.requestClient({
             method: "post",
@@ -201,6 +206,7 @@ class Hoover extends utils.Adapter {
         if (!awsLogin) {
             return;
         }
+        this.session = { ...this.session, ...awsLogin.cognitoUser };
         const awsPayload = JSON.stringify({
             IdentityId: "eu-west-1:cd22af9b-5fc2-4593-90e8-e00cd19d474b",
             Logins: {
