@@ -73,6 +73,31 @@ class Hoover extends utils.Adapter {
         }
     }
     async login() {
+        const initSession = await this.requestClient({
+            method: "get",
+            url: "https://he-accounts.force.com/SmartHome/services/oauth2/authorize?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=0813546c-8bee-4c18-b626-63588a3174a5",
+            headers: {
+                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "de-de",
+                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+            },
+            maxRedirects: 0,
+        })
+            .then((res) => {
+                this.log.debug(JSON.stringify(res.data));
+                return "";
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 302) {
+                    return qs.parse(error.response.headers.location.split("?")[1]);
+                }
+                this.log.error(error);
+                error.response && this.log.error(JSON.stringify(error.response.data));
+            });
+        if (!initSession) {
+            return;
+        }
+
         const step01Url = await this.requestClient({
             method: "post",
             url: "https://he-accounts.force.com/SmartHome/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
@@ -86,7 +111,11 @@ class Hoover extends utils.Adapter {
                 this.config.username +
                 "%22%2C%22password%22%3A%22" +
                 this.config.password +
-                "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3DCAAAAYCom7KXMDAwMDAwMDAwMDAwMDAwAAAA7OW-svpc80G0trDHf3_T9Z7SIt0oVscCqVBaxdbzhRsVqNj7_Y3aucDaj3We-mW-sgkQhMuVkxwqZXyDXAg5ollP0yKsEsAu3Mdf_o_g39neHU3KlOR7CoKWP_uTEURBkI-KbUq4M3CI8edOTK2wmd7e2hLfhulP6cF8esY5pHnVCRYVjYz7F1fUgfUIZFlgVqUAquELHd_9hFp8AiL74J_qEeis73qnwg7MmriIAwuDlPIaC0XDENLru7tKLNxDtr4XupX09yy1WULsqo5ZgfB50IX5ExxXaFo579xKkrlq75vTylrDMhcxAsGgzXX9BOH_6Kcg-5wLfYe3FHQgtnsppn-uz_RQK-nknjkPS1hGy1LHeOt9cvxUN05sJu_jgjarSpsRi07C2dlYsoMJktmrOYel290p9q1iD1GbMTzM1nNyBOPFUBNXomCYuPPBEIf-t6986zgl1qaRzGTX0QL2ECGNmCpcAhV-l614bYdAjdaTWAPxvJrR1MEP9jMO79Y36iXL-d1lGLrsfOhBVd60jJ3yMt9wh8cfLz99mLgjQ4DA9B2mOLSu3xvEjNIAKkzdCaepujnimburl1c3xk2Rw5ZjI-u8CXhYoQ15iMbrBRJCTQ22uT3F86orTYGfL_e3ScsoOf2SRnmFjvq-PLnTlZ-UFIX2rzzhi1gl73jLl4l_qjP7jRNvRCEqLIhGBIV-6CZ10qqfeMu0r04K3dI%253D%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=%7B%22mode%22%3A%22PROD%22%2C%22fwuid%22%3A%222yRFfs4WfGnFrNGn9C_dGg%22%2C%22app%22%3A%22siteforce%3AloginApp2%22%2C%22loaded%22%3A%7B%22APPLICATION%40markup%3A%2F%2Fsiteforce%3AloginApp2%22%3A%22PnuMahsrn7JWWgS2n6sUkQ%22%7D%2C%22dn%22%3A%5B%5D%2C%22globals%22%3A%7B%7D%2C%22ct%22%3A1%2C%22uad%22%3Afalse%7D&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253DCAAAAYCom7KXMDAwMDAwMDAwMDAwMDAwAAAA7OW-svpc80G0trDHf3_T9Z7SIt0oVscCqVBaxdbzhRsVqNj7_Y3aucDaj3We-mW-sgkQhMuVkxwqZXyDXAg5ollP0yKsEsAu3Mdf_o_g39neHU3KlOR7CoKWP_uTEURBkI-KbUq4M3CI8edOTK2wmd7e2hLfhulP6cF8esY5pHnVCRYVjYz7F1fUgfUIZFlgVqUAquELHd_9hFp8AiL74J_qEeis73qnwg7MmriIAwuDlPIaC0XDENLru7tKLNxDtr4XupX09yy1WULsqo5ZgfB50IX5ExxXaFo579xKkrlq75vTylrDMhcxAsGgzXX9BOH_6Kcg-5wLfYe3FHQgtnsppn-uz_RQK-nknjkPS1hGy1LHeOt9cvxUN05sJu_jgjarSpsRi07C2dlYsoMJktmrOYel290p9q1iD1GbMTzM1nNyBOPFUBNXomCYuPPBEIf-t6986zgl1qaRzGTX0QL2ECGNmCpcAhV-l614bYdAjdaTWAPxvJrR1MEP9jMO79Y36iXL-d1lGLrsfOhBVd60jJ3yMt9wh8cfLz99mLgjQ4DA9B2mOLSu3xvEjNIAKkzdCaepujnimburl1c3xk2Rw5ZjI-u8CXhYoQ15iMbrBRJCTQ22uT3F86orTYGfL_e3ScsoOf2SRnmFjvq-PLnTlZ-UFIX2rzzhi1gl73jLl4l_qjP7jRNvRCEqLIhGBIV-6CZ10qqfeMu0r04K3dI%25253D%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
+                "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+                initSession.source +
+                "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=%7B%22mode%22%3A%22PROD%22%2C%22fwuid%22%3A%222yRFfs4WfGnFrNGn9C_dGg%22%2C%22app%22%3A%22siteforce%3AloginApp2%22%2C%22loaded%22%3A%7B%22APPLICATION%40markup%3A%2F%2Fsiteforce%3AloginApp2%22%3A%22PnuMahsrn7JWWgS2n6sUkQ%22%7D%2C%22dn%22%3A%5B%5D%2C%22globals%22%3A%7B%7D%2C%22ct%22%3A1%2C%22uad%22%3Afalse%7D&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
+                initSession.source +
+                "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
