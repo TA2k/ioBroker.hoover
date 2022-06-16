@@ -13,6 +13,7 @@ const crypto = require("crypto");
 const qs = require("qs");
 const tough = require("tough-cookie");
 const { HttpsCookieAgent } = require("http-cookie-agent");
+const awsIot = require("aws-iot-device-sdk");
 
 class Hoover extends utils.Adapter {
     /**
@@ -63,6 +64,7 @@ class Hoover extends utils.Adapter {
 
         if (this.session.access_token) {
             await this.getDeviceList();
+            await this.connectMqtt();
             await this.updateDevices();
             this.updateInterval = setInterval(async () => {
                 await this.updateDevices();
@@ -113,7 +115,7 @@ class Hoover extends utils.Adapter {
                 this.config.password +
                 "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
                 initSession.source +
-                "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=%7B%22mode%22%3A%22PROD%22%2C%22fwuid%22%3A%222yRFfs4WfGnFrNGn9C_dGg%22%2C%22app%22%3A%22siteforce%3AloginApp2%22%2C%22loaded%22%3A%7B%22APPLICATION%40markup%3A%2F%2Fsiteforce%3AloginApp2%22%3A%22PnuMahsrn7JWWgS2n6sUkQ%22%7D%2C%22dn%22%3A%5B%5D%2C%22globals%22%3A%7B%7D%2C%22ct%22%3A1%2C%22uad%22%3Afalse%7D&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
+                '%26display%3Dtouch%22%7D%7D%5D%7D&aura.context={"mode":"PROD","fwuid":"-SjNAdgW9yv96YgKI8MiFA","app":"siteforce:loginApp2","loaded":{"APPLICATION@markup://siteforce:loginApp2":"-hrZBTk7lMzq7OjH28-gEA"},"dn":[],"globals":{},"ct":1,"uad":false}&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D' +
                 initSession.source +
                 "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
         })
@@ -236,6 +238,7 @@ class Hoover extends utils.Adapter {
             return;
         }
         this.session = { ...this.session, ...awsLogin.cognitoUser };
+        this.session.tokenSigned = awsLogin.tokenSigned;
         const awsPayload = JSON.stringify({
             IdentityId: "eu-west-1:cd22af9b-5fc2-4593-90e8-e00cd19d474b",
             Logins: {
@@ -287,7 +290,7 @@ class Hoover extends utils.Adapter {
                 this.log.info(`Found ${res.data.payload.appliances.length} devices`);
                 for (const device of res.data.payload.appliances) {
                     const id = device.serialNumber;
-                    this.deviceArray.push(id);
+                    this.deviceArray.push(device);
                     let name = device.applianceTypeName;
                     if (device.modelName) {
                         name += " " + device.modelName;
@@ -336,6 +339,42 @@ class Hoover extends utils.Adapter {
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
     }
+    async connectMqtt() {
+        this.log.info("Connecting to MQTT");
+
+        this.device = awsIot.device({
+            debug: false,
+            protocol: "wss-custom-auth",
+            host: "a30f6tqw0oh1x0-ats.iot.eu-west-1.amazonaws.com",
+            customAuthHeaders: {
+                "X-Amz-CustomAuthorizer-Name": "candy-iot-authorizer",
+                "X-Amz-CustomAuthorizer-Signature": this.session.tokenSigned,
+                token: this.session.id_token,
+            },
+        });
+        this.device.on("connect", () => {
+            this.log.info("mqtt connected");
+            for (const device of this.deviceArray) {
+                this.log.info(`subscribe to ${device.macAddress}`);
+                this.device.subscribe("haier/things/" + device.macAddress + "/event/appliancestatus/update");
+                this.device.subscribe("haier/things/" + device.macAddress + "/event/discovery/update");
+                this.device.subscribe("$aws/events/presence/connected/" + device.macAddress);
+            }
+        });
+
+        this.device.on("message", (topic, payload) => {
+            this.log.debug(`message ${topic} ${payload.toString()}`);
+        });
+        this.device.on("error", () => {
+            this.log.debug("error");
+        });
+        this.device.on("reconnect", () => {
+            this.log.info("reconnect");
+        });
+        this.device.on("offline", () => {
+            this.log.info("disconnect");
+        });
+    }
 
     async updateDevices() {
         const statusArray = [
@@ -353,7 +392,8 @@ class Hoover extends utils.Adapter {
             "user-agent": "hOn/3 CFNetwork/1240.0.4 Darwin/20.6.0",
             "accept-language": "de-de",
         };
-        for (const id of this.deviceArray) {
+        for (const device of this.deviceArray) {
+            const id = device.serialNumber;
             for (const element of statusArray) {
                 const url = element.url.replace("$vin", id);
 
