@@ -26,7 +26,7 @@ hoover.0.id.remote auf true/false setzen steuert den jeweiligen Befehl
 
 ## Diskussion und Fragen
 
-<https://forum.iobroker.net/topic/>
+<https://forum.iobroker.net/topic/55667/test-adapter-hoover-hon>
 
 ## Changelog
 
