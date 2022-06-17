@@ -682,7 +682,6 @@ class Hoover extends utils.Adapter {
     onUnload(callback) {
         try {
             this.setState("info.connection", false, true);
-            this.refreshTimeout && clearTimeout(this.refreshTimeout);
             this.reLoginTimeout && clearTimeout(this.reLoginTimeout);
             this.refreshTokenTimeout && clearTimeout(this.refreshTokenTimeout);
             this.updateInterval && clearInterval(this.updateInterval);
