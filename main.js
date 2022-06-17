@@ -12,7 +12,7 @@ const Json2iob = require("./lib/json2iob");
 const crypto = require("crypto");
 const qs = require("qs");
 const tough = require("tough-cookie");
-const { HttpsCookieAgent } = require("http-cookie-agent");
+const { HttpsCookieAgent } = require("http-cookie-agent/http");
 const awsIot = require("aws-iot-device-sdk");
 
 class Hoover extends utils.Adapter {
