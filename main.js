@@ -68,7 +68,7 @@ class Hoover extends utils.Adapter {
             await this.updateDevices();
             this.updateInterval = setInterval(async () => {
                 await this.updateDevices();
-            }, this.config.interval * 60 * 1000);
+            }, 10 * 60 * 1000);
             this.refreshTokenInterval = setInterval(() => {
                 this.refreshToken();
             }, 2 * 60 * 60 * 1000);
@@ -289,7 +289,7 @@ class Hoover extends utils.Adapter {
                 }
                 this.log.info(`Found ${res.data.payload.appliances.length} devices`);
                 for (const device of res.data.payload.appliances) {
-                    const id = device.serialNumber;
+                    const id = device.macAddress;
                     this.deviceArray.push(device);
                     let name = device.applianceTypeName;
                     if (device.modelName) {
@@ -309,6 +309,13 @@ class Hoover extends utils.Adapter {
                         },
                         native: {},
                     });
+                    await this.setObjectNotExistsAsync(id + ".stream", {
+                        type: "channel",
+                        common: {
+                            name: "Data from mqtt stream",
+                        },
+                        native: {},
+                    });
                     await this.setObjectNotExistsAsync(id + ".general", {
                         type: "channel",
                         common: {
@@ -317,7 +324,163 @@ class Hoover extends utils.Adapter {
                         native: {},
                     });
 
-                    const remoteArray = [{ command: "Refresh", name: "True = Refresh" }];
+                    const remoteArray = [
+                        { command: "refresh", name: "True = Refresh" },
+                        { command: "stopProgram", name: "True = stop" },
+                        {
+                            command: "send",
+                            name: "Send a custom command",
+                            type: "json",
+                            role: "json",
+                            def: `{
+                                "macAddress": "id of the device set by adapter",
+                                "timestamp": "2022-05-10T08:16:35.010Z",
+                                "commandName": "startProgram",
+                                "programName": "PROGRAMS.TD.CARE_45",
+                                "transactionId": "2022-05-10T08:16:35.011Z",
+                                "applianceOptions": {
+                                    "opt1": "anticrease",
+                                    "opt2": "dryingManager",
+                                    "opt3": "bestIroning",
+                                    "opt4": "hybrid"
+                                },
+                                "device": {
+                                    "mobileOs": "ios",
+                                    "mobileId": "245D4D83-98DE-4073-AEE8-1DB085DC0158",
+                                    "osVersion": "15.5",
+                                    "appVersion": "1.40.2",
+                                    "deviceModel": "iPhone10,5"
+                                },
+                                "attributes": {
+                                    "prStr": "Care 45",
+                                    "energyLabel": "0",
+                                    "channel": "mobileApp",
+                                    "origin": "lastProgram"
+                                },
+                                "ancillaryParameters": {
+                                    "dryTimeMM": "45",
+                                    "energyLabel": "0",
+                                    "functionalId": "8",
+                                    "programFamily": "[dashboard]",
+                                    "programRules": {
+                                        "opt3": {
+                                            "dryLevel": {
+                                                "2|3|4": {
+                                                    "fixedValue": "0",
+                                                    "typology": "fixed"
+                                                }
+                                            }
+                                        },
+                                        "dryTime": {
+                                            "dryTimeMM": {
+                                                "30": {
+                                                    "fixedValue": "1",
+                                                    "typology": "fixed"
+                                                },
+                                                "45": {
+                                                    "fixedValue": "2",
+                                                    "typology": "fixed"
+                                                },
+                                                "59": {
+                                                    "fixedValue": "3",
+                                                    "typology": "fixed"
+                                                },
+                                                "70": {
+                                                    "fixedValue": "4",
+                                                    "typology": "fixed"
+                                                },
+                                                "80": {
+                                                    "fixedValue": "5",
+                                                    "typology": "fixed"
+                                                },
+                                                "90": {
+                                                    "fixedValue": "6",
+                                                    "typology": "fixed"
+                                                },
+                                                "100": {
+                                                    "fixedValue": "7",
+                                                    "typology": "fixed"
+                                                },
+                                                "110": {
+                                                    "fixedValue": "8",
+                                                    "typology": "fixed"
+                                                },
+                                                "120": {
+                                                    "fixedValue": "9",
+                                                    "typology": "fixed"
+                                                },
+                                                "130": {
+                                                    "fixedValue": "10",
+                                                    "typology": "fixed"
+                                                },
+                                                "140": {
+                                                    "fixedValue": "11",
+                                                    "typology": "fixed"
+                                                },
+                                                "150": {
+                                                    "fixedValue": "12",
+                                                    "typology": "fixed"
+                                                },
+                                                "160": {
+                                                    "fixedValue": "13",
+                                                    "typology": "fixed"
+                                                },
+                                                "170": {
+                                                    "fixedValue": "14",
+                                                    "typology": "fixed"
+                                                },
+                                                "180": {
+                                                    "fixedValue": "15",
+                                                    "typology": "fixed"
+                                                },
+                                                "190": {
+                                                    "fixedValue": "16",
+                                                    "typology": "fixed"
+                                                },
+                                                "200": {
+                                                    "fixedValue": "17",
+                                                    "typology": "fixed"
+                                                },
+                                                "210": {
+                                                    "fixedValue": "18",
+                                                    "typology": "fixed"
+                                                },
+                                                "220": {
+                                                    "fixedValue": "19",
+                                                    "typology": "fixed"
+                                                }
+                                            }
+                                        },
+                                        "dryLevel": {
+                                            "opt3": {
+                                                "1": {
+                                                    "fixedValue": "1",
+                                                    "typology": "fixed"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "remoteActionable": "1",
+                                    "remoteVisible": "1",
+                                    "suggestedLoadD": "2"
+                                },
+                                "parameters": {
+                                    "dryTime": "2",
+                                    "dryingManager": "0",
+                                    "hybrid": "1",
+                                    "checkUpStatus": "0",
+                                    "anticrease": "0",
+                                    "delayTime": "0",
+                                    "prCode": "54",
+                                    "prPosition": "13",
+                                    "dryLevel": "0",
+                                    "bestIroning": "0",
+                                    "onOffStatus": "1"
+                                },
+                                "applianceType": "TD"
+                            }`,
+                        },
+                    ];
                     remoteArray.forEach((remote) => {
                         this.setObjectNotExists(id + ".remote." + remote.command, {
                             type: "state",
@@ -325,6 +488,7 @@ class Hoover extends utils.Adapter {
                                 name: remote.name || "",
                                 type: remote.type || "boolean",
                                 role: remote.role || "boolean",
+                                def: remote.def || false,
                                 write: true,
                                 read: true,
                             },
@@ -364,6 +528,12 @@ class Hoover extends utils.Adapter {
 
         this.device.on("message", (topic, payload) => {
             this.log.debug(`message ${topic} ${payload.toString()}`);
+            try {
+                const message = JSON.parse(payload.toString());
+                this.json2iob.parse(message.macAddress + ".stream", message, { preferedArrayName: "parName", channelName: "data from mqtt stream" });
+            } catch (error) {
+                this.log.error(error);
+            }
         });
         this.device.on("error", () => {
             this.log.debug("error");
@@ -379,9 +549,9 @@ class Hoover extends utils.Adapter {
     async updateDevices() {
         const statusArray = [
             {
-                path: "general",
-                url: "https://api-iot.he.services/commands/v1/appliance",
-                desc: "General",
+                path: "context",
+                url: "https://api-iot.he.services/commands/v1/context?macAddress=$mac&applianceType=$type&category=CYCLE",
+                desc: "Current context",
             },
         ];
 
@@ -393,9 +563,10 @@ class Hoover extends utils.Adapter {
             "accept-language": "de-de",
         };
         for (const device of this.deviceArray) {
-            const id = device.serialNumber;
+            const id = device.macAddress;
             for (const element of statusArray) {
-                const url = element.url.replace("$vin", id);
+                let url = element.url.replace("$mac", id);
+                url = url.replace("$type", device.applianceTypeName);
 
                 await this.requestClient({
                     method: "get",
@@ -407,7 +578,10 @@ class Hoover extends utils.Adapter {
                         if (!res.data) {
                             return;
                         }
-                        const data = res.data;
+                        let data = res.data;
+                        if (data.payload) {
+                            data = data.payload;
+                        }
 
                         const forceIndex = null;
                         const preferedArrayName = null;
@@ -502,24 +676,59 @@ class Hoover extends utils.Adapter {
             if (!state.ack) {
                 const deviceId = id.split(".")[2];
                 const command = id.split(".")[4];
+
+                let data = {};
                 if (id.split(".")[3] !== "remote") {
                     return;
                 }
 
-                if (command === "Refresh") {
+                if (command === "refresh") {
                     this.updateDevices();
+
+                    return;
                 }
-                const data = {};
+                if (command === "stopProgram") {
+                    const dt = new Date().toISOString();
+
+                    data = {
+                        macAddress: deviceId,
+                        timestamp: dt,
+                        commandName: "stopProgram",
+                        transactionId: deviceId + "_" + dt,
+                        applianceOptions: {},
+                        device: {
+                            mobileId: "245D4D83-98DE-4073-AEE8-1DB085DC0158",
+                            mobileOs: "ios",
+                            osVersion: "15.5",
+                            appVersion: "1.40.2",
+                            deviceModel: "iPhone10,5",
+                        },
+                        attributes: {
+                            channel: "mobileApp",
+                            origin: "standardProgram",
+                        },
+                        ancillaryParameters: {},
+                        parameters: {
+                            onOffStatus: "0",
+                        },
+                        applianceType: "",
+                    };
+                }
+                if (command === "send") {
+                    data = JSON.parse(state.val);
+                }
+                data.macAddress = deviceId;
                 this.log.debug(JSON.stringify(data));
 
                 await this.requestClient({
                     method: "post",
-                    url: "",
+                    url: "https://api-iot.he.services/commands/v1/send",
                     headers: {
-                        accept: "*/*",
-                        "content-type": "application/json",
-                        "accept-language": "de",
-                        authorization: "Bearer " + this.session.access_token,
+                        accept: "application/json, text/plain, */*",
+                        "id-token": this.session.id_token,
+                        "cognito-token": this.session.Token,
+                        "user-agent": "hOn/3 CFNetwork/1240.0.4 Darwin/20.6.0",
+                        "accept-language": "de-de",
                     },
                     data: data,
                 })
@@ -533,10 +742,6 @@ class Hoover extends utils.Adapter {
                             this.log.error(JSON.stringify(error.response.data));
                         }
                     });
-                this.refreshTimeout && clearTimeout(this.refreshTimeout);
-                this.refreshTimeout = setTimeout(async () => {
-                    await this.updateDevices();
-                }, 10 * 1000);
             }
         }
     }

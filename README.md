@@ -23,6 +23,7 @@ Die hon Mail und Passwort eingeben.
 
 hoover.0.id.remote auf true/false setzen steuert den jeweiligen Befehl
 
+
 ## Diskussion und Fragen
 
 <https://forum.iobroker.net/topic/>
