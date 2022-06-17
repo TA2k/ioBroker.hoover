@@ -77,7 +77,7 @@ class Hoover extends utils.Adapter {
         }
     }
     async login() {
-        const initSession = await this.requestClient({
+        const initUrl = await this.requestClient({
             method: "get",
             url: "https://he-accounts.force.com/SmartHome/services/oauth2/authorize?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=0813546c-8bee-4c18-b626-63588a3174a5",
             headers: {
@@ -93,14 +93,37 @@ class Hoover extends utils.Adapter {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
-                    return qs.parse(error.response.headers.location.split("?")[1]);
+                    return error.response.headers.location;
                 }
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
-        if (!initSession) {
+        if (!initUrl) {
             return;
         }
+        const fwuid = await this.requestClient({
+            method: "get",
+            url: "https://he-accounts.force.com/SmartHome/s/login/?System=IoT_Mobile_App&RegistrationSubChannel=hOn",
+            headers: {
+                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "de-de",
+                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+            },
+        })
+            .then((res) => {
+                this.log.debug(JSON.stringify(res.data));
+                let fwuid = res.headers.link;
+                fwuid = decodeURIComponent(fwuid);
+                const idsJSON = JSON.parse(fwuid.split("</SmartHome/s/sfsites/l/")[1].split("/app")[0]);
+                idsJSON.fwuid = fwuid.split("auraFW/javascript/")[1].split("/")[0];
+                return idsJSON;
+            })
+            .catch((error) => {
+                this.log.error(error);
+                error.response && this.log.error(JSON.stringify(error.response.data));
+            });
+        this.log.debug(`fwuid: ${JSON.stringify(fwuid)}`);
+        const initSession = qs.parse(initUrl.split("?")[1]);
 
         const step01Url = await this.requestClient({
             method: "post",
@@ -117,7 +140,9 @@ class Hoover extends utils.Adapter {
                 this.config.password +
                 "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
                 initSession.source +
-                '%26display%3Dtouch%22%7D%7D%5D%7D&aura.context={"mode":"PROD","fwuid":"-SjNAdgW9yv96YgKI8MiFA","app":"siteforce:loginApp2","loaded":{"APPLICATION@markup://siteforce:loginApp2":"-hrZBTk7lMzq7OjH28-gEA"},"dn":[],"globals":{},"ct":1,"uad":false}&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D' +
+                "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=" +
+                JSON.stringify(fwuid) +
+                "&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
                 initSession.source +
                 "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
         })
@@ -689,9 +714,8 @@ class Hoover extends utils.Adapter {
 
                     return;
                 }
+                const dt = new Date().toISOString();
                 if (command === "stopProgram") {
-                    const dt = new Date().toISOString();
-
                     data = {
                         macAddress: deviceId,
                         timestamp: dt,
@@ -720,6 +744,8 @@ class Hoover extends utils.Adapter {
                     data = JSON.parse(state.val);
                 }
                 data.macAddress = deviceId;
+                data.timestamp = dt;
+                data.transactionId = deviceId + "_" + dt;
                 this.log.debug(JSON.stringify(data));
 
                 await this.requestClient({
