@@ -21,6 +21,8 @@
         "password": {
             "type": "password",
             "newLine": true,
+            "repeat": false,
+            "visible": true,
             "sm": 3,
             "label": {
                 "en": "App Password",
