@@ -200,7 +200,7 @@ class Hoover extends utils.Adapter {
                 if (res.data.includes("window.location.replace('")) {
                     return res.data.split("window.location.replace('")[1].split("')")[0];
                 }
-                this.log.error("Missing step3 url");
+                this.log.error("Login failed please logout and login in your hON and accept new terms");
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
