@@ -88,6 +88,7 @@ class Hoover extends utils.Adapter {
             maxRedirects: 0,
         })
             .then((res) => {
+                this.log.error("Login step #1 failed");
                 this.log.debug(JSON.stringify(res.data));
                 return "";
             })
@@ -119,6 +120,7 @@ class Hoover extends utils.Adapter {
                 return idsJSON;
             })
             .catch((error) => {
+                this.log.error("Login step #2 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -155,6 +157,7 @@ class Hoover extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
+                this.log.error("Login step #3 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -179,6 +182,7 @@ class Hoover extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
+                this.log.error("Login step #4 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -204,6 +208,7 @@ class Hoover extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
+                this.log.error("Login step #5 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -229,6 +234,7 @@ class Hoover extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
+                this.log.error("Login step #6 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -251,6 +257,7 @@ class Hoover extends utils.Adapter {
             data: '{"appVersion":"1.40.2","mobileId":"245D4D83-98DE-4073-AEE8-1DB085DC0159","osVersion":"14.8","os":"ios","deviceModel":"iPhone10,5"}',
         })
             .then((res) => {
+                this.log.debug("Receiving aws infos");
                 this.log.debug(JSON.stringify(res.data));
                 if (res.data.cognitoUser) {
                     return res.data;
@@ -258,6 +265,7 @@ class Hoover extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
+                this.log.error("Login step #7 failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
@@ -292,6 +300,7 @@ class Hoover extends utils.Adapter {
                 this.setState("info.connection", true, true);
             })
             .catch((error) => {
+                this.log.error("Login step #aws failed");
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
