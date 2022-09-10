@@ -1,117 +1,108 @@
 {
-    "common": {
-        "name": "hoover",
-        "version": "0.0.1",
-        "news": {
-            "0.0.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "zh-cn": "首次出版"
-            }
-        },
-        "titleLang": {
-            "en": "Hoover",
-            "de": "Hoover",
-            "ru": "Пылесос",
-            "pt": "Hoover",
-            "nl": "Hoover",
-            "fr": "Hoover",
-            "it": "Hoover",
-            "es": "Hoover",
-            "pl": "Hoover",
-            "zh-cn": "胡佛"
-        },
-        "desc": {
-            "en": "Adapter for hoover devices",
-            "de": "Adapter für Hoover hON Geräte",
-            "ru": "Адаптер для пылесосов",
-            "pt": "Adaptador para dispositivos hoover",
-            "nl": "Adapter voor hoover-apparaten",
-            "fr": "Adaptateur pour appareils aspirateur",
-            "it": "Adattatore per dispositivi di aspirapolvere",
-            "es": "Adaptador para aspiradoras",
-            "pl": "Adapter do odkurzaczy",
-            "zh-cn": "胡佛设备适配器"
-        },
-        "authors": [
-            "TA2k <tombox2020@gmail.com>"
-        ],
-        "keywords": [
-            "hoover",
-            "hon"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "main": "main.js",
-        "icon": "hoover.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.hoover/master/admin/hoover.png",
-        "readme": "https://github.com/TA2k/ioBroker.hoover/blob/master/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "household",
-        "compact": true,
-        "connectionType": "cloud",
-        "dataSource": "poll",
-        "materialize": true,
-        "adminUI": {
-            "config": "json"
-        },
-        "plugins": {
-            "sentry": {
-                "dsn": "https://c9bd6c851b1246da95e6e982aa9b88f3@sentry.iobroker.net/152"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=3.2.0"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.2.28"
-            }
-        ]
+  "common": {
+    "name": "hoover",
+    "version": "0.0.2",
+    "news": {
+      "0.0.2": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "zh-cn": "首次出版"
+      }
     },
-    "encryptedNative": [
-        "password"
-    ],
-    "protectedNative": [
-        "password"
-    ],
-    "native": {
-        "username": "",
-        "password": ""
+    "titleLang": {
+      "en": "Hoover",
+      "de": "Hoover",
+      "ru": "Пылесос",
+      "pt": "Hoover",
+      "nl": "Hoover",
+      "fr": "Hoover",
+      "it": "Hoover",
+      "es": "Hoover",
+      "pl": "Hoover",
+      "zh-cn": "胡佛"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
+    "desc": {
+      "en": "Adapter for hoover devices",
+      "de": "Adapter für Hoover hON Geräte",
+      "ru": "Адаптер для пылесосов",
+      "pt": "Adaptador para dispositivos hoover",
+      "nl": "Adapter voor hoover-apparaten",
+      "fr": "Adaptateur pour appareils aspirateur",
+      "it": "Adattatore per dispositivi di aspirapolvere",
+      "es": "Adaptador para aspiradoras",
+      "pl": "Adapter do odkurzaczy",
+      "zh-cn": "胡佛设备适配器"
+    },
+    "authors": ["TA2k <tombox2020@gmail.com>"],
+    "keywords": ["hoover", "hon"],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "hoover.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.hoover/master/admin/hoover.png",
+    "readme": "https://github.com/TA2k/ioBroker.hoover/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "materialize": true,
+    "adminUI": {
+      "config": "json"
+    },
+    "plugins": {
+      "sentry": {
+        "dsn": "https://c9bd6c851b1246da95e6e982aa9b88f3@sentry.iobroker.net/152"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=3.2.0"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.2.28"
+      }
     ]
+  },
+  "encryptedNative": ["password"],
+  "protectedNative": ["password"],
+  "native": {
+    "username": "",
+    "password": ""
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
