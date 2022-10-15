@@ -275,7 +275,7 @@ class Hoover extends utils.Adapter {
     this.session = { ...this.session, ...awsLogin.cognitoUser };
     this.session.tokenSigned = awsLogin.tokenSigned;
     const awsPayload = JSON.stringify({
-      IdentityId: "eu-west-1:cd22af9b-5fc2-4593-90e8-e00cd19d474b",
+      IdentityId: awsLogin.cognitoUser.IdentityId,
       Logins: {
         "cognito-identity.amazonaws.com": awsLogin.cognitoUser.Token,
       },
