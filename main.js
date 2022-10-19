@@ -657,7 +657,7 @@ class Hoover extends utils.Adapter {
     }
     await this.requestClient({
       method: "post",
-      url: "https://he-accounts.force.com/SmartHome/services/oauth2/token?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&refresh_token=5Aep861ikNsOLQGnboERb071AJnH78LQeRc565OSzMhK0X5_QLacxYNOwxdk90V6FGRGPK_T5a.mvc48glv7JAK&grant_type=refresh_token",
+      url: "https://he-accounts.force.com/SmartHome/services/oauth2/token?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&refresh_token="+this.session.refresh_token+"&grant_type=refresh_token",
       headers: {
         Host: "he-accounts.force.com",
         Accept: "application/json",
