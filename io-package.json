@@ -1,8 +1,11 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "news": {
+      "0.0.4": {
+        "en": "fix token refresh"
+      },
       "0.0.3": {
         "en": "fix NotAuthorizedException issue"
       },
