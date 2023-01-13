@@ -1,8 +1,11 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": "Fix connetction reconnect"
+      },
       "0.0.4": {
         "en": "fix token refresh"
       },
