@@ -115,7 +115,8 @@ class Hoover extends utils.Adapter {
         this.log.debug(JSON.stringify(res.data));
         let fwuid = res.headers.link;
         fwuid = decodeURIComponent(fwuid);
-        const idsJSON = JSON.parse(fwuid.split("</SmartHome/s/sfsites/l/")[1].split("/app")[0]);
+
+        const idsJSON = JSON.parse("{" + fwuid.split("/{")[1].split("/app")[0]);
         idsJSON.fwuid = fwuid.split("auraFW/javascript/")[1].split("/")[0];
         return idsJSON;
       })
