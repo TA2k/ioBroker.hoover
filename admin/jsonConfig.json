@@ -63,6 +63,24 @@
         "pl": "Nazwa",
         "zh-cn": "附录"
       }
+    },
+    "interval": {
+      "type": "number",
+      "newLine": true,
+      "min": 1,
+      "sm": 2,
+      "label": {
+        "en": "Update interval (in minutes)",
+        "de": "Aktualisierungsintervall für Wizard App (in Minuten)",
+        "ru": "Интервал обновления (в минутах)",
+        "pt": "Intervalo de atualização (em minutos)",
+        "nl": "Update-interval (in minuten)",
+        "fr": "Intervalle de mise à jour (en minutes)",
+        "it": "Intervallo di aggiornamento (in minuti)",
+        "es": "Intervalo de actualización (en minutos)",
+        "pl": "Interwał aktualizacji (w minutach)",
+        "zh-cn": "更新间隔（分钟）"
+      }
     }
   }
 }

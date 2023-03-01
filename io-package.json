@@ -92,7 +92,8 @@
   "native": {
     "username": "",
     "password": "",
-    "type": "hon"
+    "type": "hon",
+    "interval": 5
   },
   "objects": [],
   "instanceObjects": [

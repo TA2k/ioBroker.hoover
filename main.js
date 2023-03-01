@@ -62,24 +62,40 @@ class Hoover extends utils.Adapter {
     this.session = {};
     this.subscribeStates("*");
     this.log.info("starting login");
+    if (this.config.type !== "wizard") {
+      this.config.interval = 10;
+    }
     await this.login();
 
     if (this.session.access_token) {
       await this.getDeviceList();
-      await this.connectMqtt();
-      await this.updateDevices();
-      this.updateInterval = setInterval(async () => {
+      if (this.config.type !== "wizard") {
+        await this.connectMqtt();
         await this.updateDevices();
-      }, 10 * 60 * 1000);
+      }
+      this.updateInterval = setInterval(async () => {
+        if (this.config.type === "wizard") {
+          await this.getDeviceList();
+        } else {
+          await this.updateDevices();
+        }
+      }, this.config.interval * 60 * 1000);
       this.refreshTokenInterval = setInterval(() => {
         this.refreshToken();
       }, 2 * 60 * 60 * 1000);
     }
   }
   async login() {
+    let loginUrl =
+      "https://he-accounts.force.com/SmartHome/services/oauth2/authorize?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=0813546c-8bee-4c18-b626-63588a3174a5";
+    if (this.config.type === "wizard") {
+      loginUrl =
+        "https://he-accounts.force.com/HooverApp/services/oauth2/authorize?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjKuido4mcuSVCv4GwStG0Lf84ccYQylvDYy9d_ZLtnyAPzJt4khJoNYn_QVB&redirect_uri=hoover://mobilesdk/detect/oauth/done&display=touch&device_id=245D4D83-98DE-4073-AEE8-1DB085DC0158&response_type=token&scope=api%20id%20refresh_token%20web%20openid";
+    }
+
     const initUrl = await this.requestClient({
       method: "get",
-      url: "https://he-accounts.force.com/SmartHome/services/oauth2/authorize?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=0813546c-8bee-4c18-b626-63588a3174a5",
+      url: loginUrl,
       headers: {
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "de-de",
@@ -102,9 +118,17 @@ class Hoover extends utils.Adapter {
     if (!initUrl) {
       return;
     }
+    const initSession = qs.parse(initUrl.split("?")[1]);
+    let fwurl = "https://he-accounts.force.com/SmartHome/s/login/?System=IoT_Mobile_App&RegistrationSubChannel=hOn";
+    if (this.config.type === "wizard") {
+      fwurl =
+        "https://he-accounts.force.com/HooverApp/login?display=touch&ec=302&inst=68&startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+        initSession.source +
+        "%26display%3Dtouch";
+    }
     const fwuid = await this.requestClient({
       method: "get",
-      url: "https://he-accounts.force.com/SmartHome/s/login/?System=IoT_Mobile_App&RegistrationSubChannel=hOn",
+      url: fwurl,
       headers: {
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "de-de",
@@ -114,11 +138,13 @@ class Hoover extends utils.Adapter {
       .then((res) => {
         this.log.debug(JSON.stringify(res.data));
         let fwuid = res.headers.link;
-        fwuid = decodeURIComponent(fwuid);
+        if (fwuid) {
+          fwuid = decodeURIComponent(fwuid);
 
-        const idsJSON = JSON.parse("{" + fwuid.split("/{")[1].split("/app")[0]);
-        idsJSON.fwuid = fwuid.split("auraFW/javascript/")[1].split("/")[0];
-        return idsJSON;
+          const idsJSON = JSON.parse("{" + fwuid.split("/{")[1].split("/app")[0]);
+          idsJSON.fwuid = fwuid.split("auraFW/javascript/")[1].split("/")[0];
+          return idsJSON;
+        }
       })
       .catch((error) => {
         this.log.error("Login step #2 failed");
@@ -126,43 +152,112 @@ class Hoover extends utils.Adapter {
         error.response && this.log.error(JSON.stringify(error.response.data));
       });
     this.log.debug(`fwuid: ${JSON.stringify(fwuid)}`);
-    const initSession = qs.parse(initUrl.split("?")[1]);
-
-    const step01Url = await this.requestClient({
-      method: "post",
-      url: "https://he-accounts.force.com/SmartHome/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
-      headers: {
-        Accept: "*/*",
-        "Accept-Language": "de-de",
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-      },
-      data:
-        "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%2277%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
-        this.config.username +
-        "%22%2C%22password%22%3A%22" +
-        this.config.password +
-        "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
-        initSession.source +
-        "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=" +
-        JSON.stringify(fwuid) +
-        "&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
-        initSession.source +
-        "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
-    })
-      .then((res) => {
-        this.log.debug(JSON.stringify(res.data));
-        if (res.data.events && res.data.events[0] && res.data.events[0].attributes && res.data.events[0].attributes) {
-          return res.data.events[0].attributes.values.url;
-        }
-        this.log.error("Missing step1 url");
-        this.log.error(JSON.stringify(res.data));
+    let step01Url;
+    if (this.config.type === "wizard") {
+      step01Url = await this.requestClient({
+        method: "post",
+        url: "https://he-accounts.force.com/HooverApp/login",
+        headers: {
+          Host: "he-accounts.force.com",
+          "Content-Type": "application/x-www-form-urlencoded",
+          Origin: "https://he-accounts.force.com",
+          Connection: "keep-alive",
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+          "Accept-Language": "de-de",
+        },
+        data: qs.stringify({
+          pqs:
+            "?startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3" +
+            initSession.source +
+            "%26display%3Dtouch&ec=302&display=touch&inst=68",
+          un: this.config.username,
+          width: "414",
+          height: "736",
+          hasRememberUn: "true",
+          startURL: "/HooverApp/setup/secur/RemoteAccessAuthorizationPage.apexp?source=" + initSession.source + "&display=touch",
+          loginURL: "",
+          loginType: "",
+          useSecure: "true",
+          local: "",
+          lt: "standard",
+          qs: "",
+          locale: "de",
+          oauth_token: "",
+          oauth_callback: "",
+          login: "",
+          serverid: "",
+          display: "touch",
+          username: this.config.username,
+          pw: this.config.password,
+          rememberUn: "on",
+        }),
       })
-      .catch((error) => {
-        this.log.error("Login step #3 failed");
-        this.log.error(error);
-        error.response && this.log.error(JSON.stringify(error.response.data));
-      });
-    if (!step01Url) {
+        .then(async (res) => {
+          this.log.debug(JSON.stringify(res.data));
+          if (this.config.type === "wizard") {
+            const forwardUrl = res.data.split('<a href="')[1].split('">')[0];
+            const forward2Url = await this.requestClient({ method: "get", url: forwardUrl }).then((res) => {
+              this.log.debug(JSON.stringify(res.data));
+              return res.data.split("window.location.href ='")[1].split("';")[0];
+            });
+            const forward3Url = await this.requestClient({ method: "get", url: "https://he-accounts.force.com" + forward2Url }).then((res) => {
+              this.log.debug(JSON.stringify(res.data));
+              return res.data.split("window.location.href ='")[1].split(";")[0];
+            });
+            this.log.debug(JSON.stringify(forward3Url));
+            this.session = qs.parse(forward3Url.split("#")[1]);
+            await this.refreshToken();
+          } else {
+            if (res.data.events && res.data.events[0] && res.data.events[0].attributes && res.data.events[0].attributes) {
+              return res.data.events[0].attributes.values.url;
+            }
+            this.log.error("Missing step1 url");
+            this.log.error(JSON.stringify(res.data));
+          }
+        })
+        .catch((error) => {
+          this.log.error("Login step #3 failed");
+          this.log.error(error);
+          error.response && this.log.error(JSON.stringify(error.response.data));
+        });
+    } else {
+      step01Url = await this.requestClient({
+        method: "post",
+        url: "https://he-accounts.force.com/SmartHome/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
+        headers: {
+          Accept: "*/*",
+          "Accept-Language": "de-de",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        data:
+          "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%2277%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
+          this.config.username +
+          "%22%2C%22password%22%3A%22" +
+          this.config.password +
+          "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+          initSession.source +
+          "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=" +
+          JSON.stringify(fwuid) +
+          "&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
+          initSession.source +
+          "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
+      })
+        .then((res) => {
+          this.log.debug(JSON.stringify(res.data));
+          if (res.data.events && res.data.events[0] && res.data.events[0].attributes && res.data.events[0].attributes) {
+            return res.data.events[0].attributes.values.url;
+          }
+          this.log.error("Missing step1 url");
+          this.log.error(JSON.stringify(res.data));
+        })
+        .catch((error) => {
+          this.log.error("Login step #3 failed");
+          this.log.error(error);
+          error.response && this.log.error(JSON.stringify(error.response.data));
+        });
+    }
+    if (!step01Url || this.config.type === "wizard") {
       return;
     }
     const step02Url = await this.requestClient({
@@ -255,7 +350,7 @@ class Hoover extends utils.Adapter {
         "id-token": this.session.id_token,
         "accept-language": "de-de",
       },
-      data: '{"appVersion":"1.40.2","mobileId":"245D4D83-98DE-4073-AEE8-1DB085DC0159","osVersion":"14.8","os":"ios","deviceModel":"iPhone10,5"}',
+      data: '{"appVersion":"1.40.2","mobileId":"245D4D83-98DE-4073-AEE8-1DB085DC0158","osVersion":"14.8","os":"ios","deviceModel":"iPhone10,5"}',
     })
       .then((res) => {
         this.log.debug("Receiving aws infos");
@@ -309,28 +404,46 @@ class Hoover extends utils.Adapter {
       });
   }
   async getDeviceList() {
+    let deviceListUrl = "https://api-iot.he.services/commands/v1/appliance";
+    if (this.config.type === "wizard") {
+      deviceListUrl = "https://simply-fi.herokuapp.com/api/v1/appliances.json?with_hidden_programs=1";
+    }
     await this.requestClient({
       method: "get",
-      url: "https://api-iot.he.services/commands/v1/appliance",
+      url: deviceListUrl,
       headers: {
         accept: "application/json, text/plain, */*",
         "id-token": this.session.id_token,
         "cognito-token": this.session.Token,
         "user-agent": "hOn/3 CFNetwork/1240.0.4 Darwin/20.6.0",
         "accept-language": "de-de",
+        Authorization: "Bearer " + this.session.id_token,
+        "Salesforce-Auth": 1,
       },
     })
       .then(async (res) => {
         this.log.debug(JSON.stringify(res.data));
-        if (!res.data.payload.appliances) {
+        let appliances;
+        if (this.config.type === "wizard") {
+          appliances = res.data;
+        } else {
+          appliances = res.data.payload.appliances;
+        }
+        if (!appliances) {
           this.log.error("No devices found");
           return;
         }
-        this.log.info(`Found ${res.data.payload.appliances.length} devices`);
-        for (const device of res.data.payload.appliances) {
-          const id = device.macAddress;
+        this.log.info(`Found ${appliances.length} devices`);
+        for (let device of appliances) {
+          if (device.appliance) {
+            device = device.appliance;
+          }
+          let id = device.macAddress;
+          if (this.config.type === "wizard") {
+            id = device.id;
+          }
           this.deviceArray.push(device);
-          let name = device.applianceTypeName;
+          let name = device.applianceTypeName || device.appliance_model;
           if (device.modelName) {
             name += " " + device.modelName;
           }
@@ -348,25 +461,37 @@ class Hoover extends utils.Adapter {
             },
             native: {},
           });
-          await this.setObjectNotExistsAsync(id + ".stream", {
-            type: "channel",
-            common: {
-              name: "Data from mqtt stream",
-            },
-            native: {},
-          });
-          await this.setObjectNotExistsAsync(id + ".general", {
-            type: "channel",
-            common: {
-              name: "General Information",
-            },
-            native: {},
-          });
+          if (!this.config.type === "wizard") {
+            await this.setObjectNotExistsAsync(id + ".stream", {
+              type: "channel",
+              common: {
+                name: "Data from mqtt stream",
+              },
+              native: {},
+            });
 
+            await this.setObjectNotExistsAsync(id + ".general", {
+              type: "channel",
+              common: {
+                name: "General Information",
+              },
+              native: {},
+            });
+          }
           const remoteArray = [
             { command: "refresh", name: "True = Refresh" },
             { command: "stopProgram", name: "True = stop" },
-            {
+          ];
+          if (this.config.type === "wizard") {
+            remoteArray.push({
+              command: "send",
+              name: "Send a custom command",
+              type: "string",
+              role: "text",
+              def: `StartStop=1&Program=P2&DelayStart=0&TreinUno=1&Eco=1&MetaCarico=0&ExtraDry=0&OpzProg=0`,
+            });
+          } else {
+            remoteArray.push({
               command: "send",
               name: "Send a custom command",
               type: "json",
@@ -518,8 +643,9 @@ class Hoover extends utils.Adapter {
                                 },
                                 "applianceType": "TD"
                             }`,
-            },
-          ];
+            });
+          }
+
           remoteArray.forEach((remote) => {
             this.setObjectNotExists(id + ".remote." + remote.command, {
               type: "state",
@@ -534,7 +660,11 @@ class Hoover extends utils.Adapter {
               native: {},
             });
           });
-          this.json2iob.parse(id + ".general", device);
+          if (this.config.type === "wizard") {
+            this.json2iob.parse(id, device);
+          } else {
+            this.json2iob.parse(id + ".general", device);
+          }
         }
       })
       .catch((error) => {
@@ -657,6 +787,33 @@ class Hoover extends utils.Adapter {
       await this.login();
       return;
     }
+    if (this.config.type === "wizard") {
+      await this.requestClient({
+        method: "post",
+        maxBodyLength: Infinity,
+        url: "https://he-accounts.force.com/HooverApp/services/oauth2/token",
+        headers: {
+          Host: "he-accounts.force.com",
+          "Content-Type": "application/x-www-form-urlencoded",
+          Connection: "keep-alive",
+          Accept: "*/*",
+          "User-Agent": "hoover-ios/762 CFNetwork/1240.0.4 Darwin/20.6.0",
+          "Accept-Language": "de-de",
+        },
+        data: qs.stringify({
+          format: "json",
+          redirect_uri: "hoover://mobilesdk/detect/oauth/done",
+          client_id: "3MVG9QDx8IX8nP5T2Ha8ofvlmjKuido4mcuSVCv4GwStG0Lf84ccYQylvDYy9d_ZLtnyAPzJt4khJoNYn_QVB",
+          device_id: "245D4D83-98DE-4073-AEE8-1DB085DC0158",
+          grant_type: "refresh_token",
+          refresh_token: this.session.refresh_token,
+        }),
+      }).then((res) => {
+        this.log.debug(JSON.stringify(res.data));
+        this.session = { ...this.session, ...res.data };
+      });
+      return;
+    }
     await this.requestClient({
       method: "post",
       url:
@@ -741,47 +898,66 @@ class Hoover extends utils.Adapter {
         }
         const dt = new Date().toISOString();
         if (command === "stopProgram") {
-          data = {
-            macAddress: deviceId,
-            timestamp: dt,
-            commandName: "stopProgram",
-            transactionId: deviceId + "_" + dt,
-            applianceOptions: {},
-            device: {
-              mobileId: "245D4D83-98DE-4073-AEE8-1DB085DC0158",
-              mobileOs: "ios",
-              osVersion: "15.5",
-              appVersion: "1.40.2",
-              deviceModel: "iPhone10,5",
-            },
-            attributes: {
-              channel: "mobileApp",
-              origin: "standardProgram",
-            },
-            ancillaryParameters: {},
-            parameters: {
-              onOffStatus: "0",
-            },
-            applianceType: "",
-          };
+          data = "Reset=1";
+          if (this.config.type !== "wizard") {
+            data = {
+              macAddress: deviceId,
+              timestamp: dt,
+              commandName: "stopProgram",
+              transactionId: deviceId + "_" + dt,
+              applianceOptions: {},
+              device: {
+                mobileId: "245D4D83-98DE-4073-AEE8-1DB085DC0158",
+                mobileOs: "ios",
+                osVersion: "15.5",
+                appVersion: "1.40.2",
+                deviceModel: "iPhone10,5",
+              },
+              attributes: {
+                channel: "mobileApp",
+                origin: "standardProgram",
+              },
+              ancillaryParameters: {},
+              parameters: {
+                onOffStatus: "0",
+              },
+              applianceType: "",
+            };
+          }
         }
         if (command === "send") {
-          data = JSON.parse(state.val);
+          if (this.config.type === "wizard") {
+            data = state.val;
+          } else {
+            data = JSON.parse(state.val);
+          }
         }
-        data.macAddress = deviceId;
-        data.timestamp = dt;
-        data.transactionId = deviceId + "_" + dt;
+        if (this.config.type == "wizard") {
+          data = {
+            appliance_id: deviceId,
+            body: data,
+          };
+        } else {
+          data.macAddress = deviceId;
+          data.timestamp = dt;
+          data.transactionId = deviceId + "_" + dt;
+        }
         this.log.debug(JSON.stringify(data));
-
+        let url = "https://api-iot.he.services/commands/v1/send";
+        if (this.config.type === "wizard") {
+          url = "https://simply-fi.herokuapp.com/api/v1/commands.json";
+        }
         await this.requestClient({
           method: "post",
-          url: "https://api-iot.he.services/commands/v1/send",
+          url: url,
           headers: {
             accept: "application/json, text/plain, */*",
             "id-token": this.session.id_token,
             "cognito-token": this.session.Token,
             "user-agent": "hOn/3 CFNetwork/1240.0.4 Darwin/20.6.0",
             "accept-language": "de-de",
+            Authorization: "Bearer " + this.session.id_token,
+            "Salesforce-Auth": 1,
           },
           data: data,
         })
