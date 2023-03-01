@@ -91,7 +91,8 @@
   "protectedNative": ["password"],
   "native": {
     "username": "",
-    "password": ""
+    "password": "",
+    "type": "hon"
   },
   "objects": [],
   "instanceObjects": [

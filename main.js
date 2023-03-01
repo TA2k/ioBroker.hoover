@@ -298,6 +298,7 @@ class Hoover extends utils.Adapter {
     })
       .then((res) => {
         this.log.debug(JSON.stringify(res.data));
+        this.log.info("Login successful");
         this.setState("info.connection", true, true);
       })
       .catch((error) => {
