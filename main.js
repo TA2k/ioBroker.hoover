@@ -68,6 +68,7 @@ class Hoover extends utils.Adapter {
     await this.login();
 
     if (this.session.access_token) {
+      this.setState("info.connection", true, true);
       await this.getDeviceList();
       if (this.config.type !== "wizard") {
         await this.connectMqtt();
