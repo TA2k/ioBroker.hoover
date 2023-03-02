@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "news": {
+      "0.0.7": {
+        "en": "Add wizard App Login",
+        "de": "wizard App Login hinzugefügt"
+      },
       "0.0.6": {
         "en": "Fix Logint"
       },

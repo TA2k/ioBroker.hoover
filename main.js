@@ -54,7 +54,7 @@ class Hoover extends utils.Adapter {
       this.log.error("Please set username and password in the instance settings");
       return;
     }
-    this.userAgent = "ioBroker v0.0.1";
+    this.userAgent = "ioBroker v0.0.7";
 
     this.updateInterval = null;
     this.reLoginTimeout = null;
