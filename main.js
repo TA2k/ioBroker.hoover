@@ -88,7 +88,7 @@ class Hoover extends utils.Adapter {
   }
   async login() {
     let loginUrl =
-      "https://he-accounts.force.com/SmartHome/services/oauth2/authorize?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=0813546c-8bee-4c18-b626-63588a3174a5";
+      "https://account2.hon-smarthome.com/services/oauth2/authorize/expid_Login?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=b8f38cb9-26f0-4aed-95b4-aa504f5e1971";
     if (this.config.type === "wizard") {
       loginUrl =
         "https://he-accounts.force.com/HooverApp/services/oauth2/authorize?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjKuido4mcuSVCv4GwStG0Lf84ccYQylvDYy9d_ZLtnyAPzJt4khJoNYn_QVB&redirect_uri=hoover://mobilesdk/detect/oauth/done&display=touch&device_id=245D4D83-98DE-4073-AEE8-1DB085DC0158&response_type=token&scope=api%20id%20refresh_token%20web%20openid";
@@ -121,6 +121,10 @@ class Hoover extends utils.Adapter {
     }
     const initSession = qs.parse(initUrl.split("?")[1]);
     let fwurl = "https://he-accounts.force.com/SmartHome/s/login/?System=IoT_Mobile_App&RegistrationSubChannel=hOn";
+    fwurl =
+      "https://account2.hon-smarthome.com/s/login/?display=touch&ec=302&inst=68&startURL=/setup/secur/RemoteAccessAuthorizationPage.apexp?source=" +
+      initSession.source +
+      "&display=touch&System=IoT_Mobile_App&RegistrationSubChannel=hOn";
     if (this.config.type === "wizard") {
       fwurl =
         "https://he-accounts.force.com/HooverApp/login?display=touch&ec=302&inst=68&startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
@@ -202,10 +206,12 @@ class Hoover extends utils.Adapter {
               this.log.debug(JSON.stringify(res.data));
               return res.data.split("window.location.href ='")[1].split("';")[0];
             });
-            const forward3Url = await this.requestClient({ method: "get", url: "https://he-accounts.force.com" + forward2Url }).then((res) => {
-              this.log.debug(JSON.stringify(res.data));
-              return res.data.split("window.location.href ='")[1].split(";")[0];
-            });
+            const forward3Url = await this.requestClient({ method: "get", url: "https://he-accounts.force.com" + forward2Url }).then(
+              (res) => {
+                this.log.debug(JSON.stringify(res.data));
+                return res.data.split("window.location.href ='")[1].split(";")[0];
+              },
+            );
             this.log.debug(JSON.stringify(forward3Url));
             this.session = qs.parse(forward3Url.split("#")[1]);
             await this.refreshToken();
@@ -225,22 +231,22 @@ class Hoover extends utils.Adapter {
     } else {
       step01Url = await this.requestClient({
         method: "post",
-        url: "https://he-accounts.force.com/SmartHome/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
+        url: "https://account2.hon-smarthome.com/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
         headers: {
           Accept: "*/*",
           "Accept-Language": "de-de",
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         data:
-          "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%2277%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
+          "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%22106%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
           this.config.username +
           "%22%2C%22password%22%3A%22" +
           this.config.password +
-          "%22%2C%22startUrl%22%3A%22%2FSmartHome%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+          "%22%2C%22startUrl%22%3A%22%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
           initSession.source +
           "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=" +
           JSON.stringify(fwuid) +
-          "&aura.pageURI=%2FSmartHome%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252FSmartHome%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
+          "&aura.pageURI=%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
           initSession.source +
           "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
       })
@@ -315,7 +321,7 @@ class Hoover extends utils.Adapter {
 
     const step04Url = await this.requestClient({
       method: "get",
-      url: "https://he-accounts.force.com" + step03Url,
+      url: "https://account2.hon-smarthome.com" + step03Url,
       headers: {
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
@@ -347,11 +353,19 @@ class Hoover extends utils.Adapter {
       headers: {
         accept: "application/json, text/plain, */*",
         "content-type": "application/json;charset=utf-8",
-        "user-agent": "hOn/3 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "user-agent": "hOn/1 CFNetwork/1240.0.4 Darwin/20.6.0",
         "id-token": this.session.id_token,
         "accept-language": "de-de",
       },
-      data: '{"appVersion":"1.40.2","mobileId":"245D4D83-98DE-4073-AEE8-1DB085DC0158","osVersion":"14.8","os":"ios","deviceModel":"iPhone10,5"}',
+      data: {
+        appVersion: "2.0.9",
+        firebaseToken:
+          "cvufm5cb9rI:APA91bG9jRyOd35YuAhnx-B0OW9WZ27QRJZUeYKGSfCQv9eDHr7rBHTCMt0pzY2R3HELIG844tDZ-Ip3dMA1_3jRBgYdPYt9byKcYd6XAi6jqJhiIimfQlAFeb5ZZvDmeqib_2UWl3yY",
+        mobileId: "245D4D83-98DE-4073-AEE8-1DB085DC0158",
+        osVersion: "14.8",
+        os: "ios",
+        deviceModel: "iPhone10,5",
+      },
     })
       .then((res) => {
         this.log.debug("Receiving aws infos");
@@ -700,7 +714,10 @@ class Hoover extends utils.Adapter {
       this.log.debug(`message ${topic} ${payload.toString()}`);
       try {
         const message = JSON.parse(payload.toString());
-        this.json2iob.parse(message.macAddress + ".stream", message, { preferedArrayName: "parName", channelName: "data from mqtt stream" });
+        this.json2iob.parse(message.macAddress + ".stream", message, {
+          preferedArrayName: "parName",
+          channelName: "data from mqtt stream",
+        });
       } catch (error) {
         this.log.error(error);
       }
@@ -818,11 +835,10 @@ class Hoover extends utils.Adapter {
     await this.requestClient({
       method: "post",
       url:
-        "https://he-accounts.force.com/SmartHome/services/oauth2/token?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&refresh_token=" +
+        "https://account2.hon-smarthome.com/services/oauth2/token?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&refresh_token=" +
         this.session.refresh_token +
         "&grant_type=refresh_token",
       headers: {
-        Host: "he-accounts.force.com",
         Accept: "application/json",
         Cookie:
           "BrowserId=3elRuc8OEeytLV_-N9BjLA; CookieConsentPolicy=0:1; LSKey-c$CookieConsentPolicy=0:1; oinfo=c3RhdHVzPUFDVElWRSZ0eXBlPTYmb2lkPTAwRFUwMDAwMDAwTGtjcQ==",
@@ -831,7 +847,7 @@ class Hoover extends utils.Adapter {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       data: qs.stringify({
-        "https://he-accounts.force.com/SmartHome/services/oauth2/token?client_id":
+        "https://account2.hon-smarthome.com/services/oauth2/token?client_id":
           "3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6",
         refresh_token: this.session.refresh_token,
         grant_type: "refresh_token",
