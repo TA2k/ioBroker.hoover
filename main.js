@@ -91,7 +91,7 @@ class Hoover extends utils.Adapter {
       "https://account2.hon-smarthome.com/services/oauth2/authorize/expid_Login?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=b8f38cb9-26f0-4aed-95b4-aa504f5e1971";
     if (this.config.type === "wizard") {
       loginUrl =
-        "https://he-accounts.force.com/HooverApp/services/oauth2/authorize?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjKuido4mcuSVCv4GwStG0Lf84ccYQylvDYy9d_ZLtnyAPzJt4khJoNYn_QVB&redirect_uri=hoover://mobilesdk/detect/oauth/done&display=touch&device_id=245D4D83-98DE-4073-AEE8-1DB085DC0158&response_type=token&scope=api%20id%20refresh_token%20web%20openid";
+        "https://haiereurope.my.site.com/HooverApp/services/oauth2/authorize?client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjKuido4mcuSVCv4GwStG0Lf84ccYQylvDYy9d_ZLtnyAPzJt4khJoNYn_QVB&redirect_uri=hoover://mobilesdk/detect/oauth/done&display=touch&device_id=245D4D83-98DE-4073-AEE8-1DB085DC0159&response_type=token&scope=api%20id%20refresh_token%20web%20openid";
     }
 
     const initUrl = await this.requestClient({
@@ -127,7 +127,7 @@ class Hoover extends utils.Adapter {
       "&display=touch&System=IoT_Mobile_App&RegistrationSubChannel=hOn";
     if (this.config.type === "wizard") {
       fwurl =
-        "https://he-accounts.force.com/HooverApp/login?display=touch&ec=302&inst=68&startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+        "https://haiereurope.my.site.com/HooverApp/login?display=touch&ec=302&inst=68&startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
         initSession.source +
         "%26display%3Dtouch";
     }
@@ -161,11 +161,9 @@ class Hoover extends utils.Adapter {
     if (this.config.type === "wizard") {
       step01Url = await this.requestClient({
         method: "post",
-        url: "https://he-accounts.force.com/HooverApp/login",
+        url: "https://haiereurope.my.site.com/HooverApp/login",
         headers: {
-          Host: "he-accounts.force.com",
           "Content-Type": "application/x-www-form-urlencoded",
-          Origin: "https://he-accounts.force.com",
           Connection: "keep-alive",
           Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
           "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
@@ -206,7 +204,7 @@ class Hoover extends utils.Adapter {
               this.log.debug(JSON.stringify(res.data));
               return res.data.split("window.location.href ='")[1].split("';")[0];
             });
-            const forward3Url = await this.requestClient({ method: "get", url: "https://he-accounts.force.com" + forward2Url }).then(
+            const forward3Url = await this.requestClient({ method: "get", url: "https://haiereurope.my.site.com" + forward2Url }).then(
               (res) => {
                 this.log.debug(JSON.stringify(res.data));
                 return res.data.split("window.location.href ='")[1].split(";")[0];
@@ -809,9 +807,8 @@ class Hoover extends utils.Adapter {
       await this.requestClient({
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://he-accounts.force.com/HooverApp/services/oauth2/token",
+        url: "https://haiereurope.my.site.com/HooverApp/services/oauth2/token",
         headers: {
-          Host: "he-accounts.force.com",
           "Content-Type": "application/x-www-form-urlencoded",
           Connection: "keep-alive",
           Accept: "*/*",
