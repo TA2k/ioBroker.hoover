@@ -436,6 +436,7 @@ class Hoover extends utils.Adapter {
     })
       .then(async (res) => {
         this.log.debug(JSON.stringify(res.data));
+
         let appliances;
         if (this.config.type === "wizard") {
           appliances = res.data;
@@ -451,7 +452,7 @@ class Hoover extends utils.Adapter {
           if (device.appliance) {
             device = device.appliance;
           }
-          let id = device.macAddress;
+          let id = device.macAddress || device.serialNumber;
           if (this.config.type === "wizard") {
             id = device.id;
           }
@@ -459,6 +460,9 @@ class Hoover extends utils.Adapter {
           let name = device.applianceTypeName || device.appliance_model;
           if (device.modelName) {
             name += " " + device.modelName;
+          }
+          if (device.nickName) {
+            name += " " + device.nickName;
           }
           await this.setObjectNotExistsAsync(id, {
             type: "device",
@@ -701,10 +705,11 @@ class Hoover extends utils.Adapter {
     this.device.on("connect", () => {
       this.log.info("mqtt connected");
       for (const device of this.deviceArray) {
-        this.log.info(`subscribe to ${device.macAddress}`);
-        this.device.subscribe("haier/things/" + device.macAddress + "/event/appliancestatus/update");
-        this.device.subscribe("haier/things/" + device.macAddress + "/event/discovery/update");
-        this.device.subscribe("$aws/events/presence/connected/" + device.macAddress);
+        const id = device.macAddress || device.serialNumber;
+        this.log.info(`subscribe to ${id}`);
+        this.device.subscribe("haier/things/" + id + "/event/appliancestatus/update");
+        this.device.subscribe("haier/things/" + id + "/event/discovery/update");
+        this.device.subscribe("$aws/events/presence/connected/" + id);
       }
     });
 
@@ -712,7 +717,8 @@ class Hoover extends utils.Adapter {
       this.log.debug(`message ${topic} ${payload.toString()}`);
       try {
         const message = JSON.parse(payload.toString());
-        this.json2iob.parse(message.macAddress + ".stream", message, {
+        const id = message.macAddress || message.serialNumber;
+        this.json2iob.parse(id + ".stream", message, {
           preferedArrayName: "parName",
           channelName: "data from mqtt stream",
         });
@@ -748,7 +754,7 @@ class Hoover extends utils.Adapter {
       "accept-language": "de-de",
     };
     for (const device of this.deviceArray) {
-      const id = device.macAddress;
+      const id = device.macAddress || device.serialNumber;
       for (const element of statusArray) {
         let url = element.url.replace("$mac", id);
         url = url.replace("$type", device.applianceTypeName);
