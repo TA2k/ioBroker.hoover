@@ -456,6 +456,7 @@ class Hoover extends utils.Adapter {
           if (this.config.type === "wizard") {
             id = device.id;
           }
+          this.log.info('Processing device "' + id + '"');
           this.deviceArray.push(device);
           let name = device.applianceTypeName || device.appliance_model;
           if (device.modelName) {

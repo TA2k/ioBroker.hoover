@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "news": {
+      "0.1.2": {
+        "en": "Fix non mac devices",
+        "de": "Fix nicht mac Geräte"
+      },
       "0.1.1": {
         "en": "Fix Login",
         "de": "Login Fix"
