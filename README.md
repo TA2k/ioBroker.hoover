@@ -89,6 +89,73 @@ AC STOP
 }
 ```
 
+AC Einstellungen
+
+```json
+{
+  "macAddress": "set by adapter",
+  "timestamp": "2024-04-12T10:52:40.997Z",
+  "ancillaryParameters": {},
+  "applianceOptions": {},
+  "applianceType": "AC",
+  "attributes": {
+    "prStr": "Kühl",
+    "channel": "mobileApp",
+    "origin": "standardProgram"
+  },
+  "commandName": "startProgram",
+  "device": {
+    "mobileId": "78A04D05-8F3C-43BE-90A6-5BC3B1A2CA52",
+    "mobileOs": "ios",
+    "osVersion": "16.7.7",
+    "appVersion": "2.7.9",
+    "deviceModel": "iPhone10,5"
+  },
+  "parameters": {
+    "10degreeHeatingStatus": "0",
+    "ch2oCleaningStatus": "0",
+    "cleaningTimeStatus": "0",
+    "echoStatus": "0",
+    "electricHeatingStatus": "0",
+    "energySavePeriod": "15",
+    "energySavingStatus": "0",
+    "filterChangeStatusCloud": "0",
+    "freshAirStatus": "0",
+    "halfDegreeSettingStatus": "0",
+    "healthMode": "0",
+    "heatAccumulationStatus": "0",
+    "humanSensingStatus": "0",
+    "humidificationStatus": "0",
+    "humiditySel": "30",
+    "intelligenceStatus": "0",
+    "lightStatus": "0",
+    "lockStatus": "0",
+    "machMode": "1",
+    "muteStatus": "0",
+    "onOffStatus": "1",
+    "operationName": "grSetDAC",
+    "pm2p5CleaningStatus": "0",
+    "pmvStatus": "0",
+    "rapidMode": "0",
+    "screenDisplayStatus": "1",
+    "selfCleaning56Status": "0",
+    "selfCleaningStatus": "0",
+    "silentSleepStatus": "0",
+    "specialMode": "0",
+    "tempSel": "22",
+    "tempUnit": "0",
+    "voiceSignStatus": "0",
+    "voiceStatus": "0",
+    "windDirectionHorizontal": "0",
+    "windDirectionVertical": "2",
+    "windSensingStatus": "0",
+    "windSpeed": "3"
+  },
+  "transactionId": "2024-04-12T10:52:40.997Z",
+  "programName": "PROGRAMS.AC.IOT_COOL"
+}
+```
+
 AC Heizen
 
 ```json
