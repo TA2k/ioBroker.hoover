@@ -28,6 +28,38 @@ Beispiel für Waschmaschine im Adapter als default:
 
 Beispiel für AC:
 
+````
+{
+    "macAddress": "set by adapter",
+    "timestamp": "2024-04-12T10:16:04.886Z",
+    "ancillaryParameters": {
+    },
+    "applianceOptions": {},
+    "applianceType": "AC",
+    "attributes": {
+        "prStr": "PROGRAMS.AC.IOT_COOL",
+        "channel": "mobileApp",
+        "origin": "standardProgram"
+    },
+    "commandName": "startProgram",
+    "device": {
+        "mobileId": "78A04D05-8F3C-43BE-90A6-5BC3B1A2CA52",
+        "mobileOs": "ios",
+        "osVersion": "17.4.1",
+        "appVersion": "2.7.9",
+        "deviceModel": "iPhone10,5"
+    },
+    "parameters": {
+        "onOffStatus": "1",
+        "windSpeed": "5",
+        "tempSel": "22"
+    },
+    "transactionId": "78-e3-6d-27-fb-f4_2024-04-12T10:16:04.886Z",
+    "programName": "PROGRAMS.AC.IOT_COOL"
+}
+```
+
+
 ```
 {
     "macAddress": "set by adapter",
@@ -178,3 +210,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+````
