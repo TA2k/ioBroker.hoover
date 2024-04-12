@@ -28,7 +28,7 @@ Beispiel für Waschmaschine im Adapter als default:
 
 Beispiel für AC:
 
-Ac Kühlen
+Ac Start Kühlen
 
 ```json
 {
@@ -89,7 +89,7 @@ AC STOP
 }
 ```
 
-AC Einstellungen
+AC Einstellungen ändern
 
 ```json
 {
