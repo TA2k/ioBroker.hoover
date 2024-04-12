@@ -60,6 +60,35 @@ Ac Kühlen
 }
 ```
 
+AC STOP
+
+```json
+{
+  "ancillaryParameters": {},
+  "applianceOptions": {},
+  "applianceType": "AC",
+  "attributes": {
+    "channel": "mobileApp",
+    "origin": "standardProgram"
+  },
+  "commandName": "stopProgram",
+  "device": {
+    "appVersion": "2.7.9",
+    "deviceModel": "iPhone10,5",
+    "mobileId": "78A04D05-8F3C-43BE-90A6-5BC3B1A2CA52",
+    "mobileOs": "ios",
+    "osVersion": "16.7.7"
+  },
+  "macAddress": "setbyadapter",
+  "parameters": {
+    "onOffStatus": "0"
+  },
+  "programName": "PROGRAMS.AC.IOT_COOL",
+  "timestamp": "2024-04-12T10:21:44.919Z",
+  "transactionId": "2024-04-12T10:21:44.919Z"
+}
+```
+
 AC Heizen
 
 ```json
