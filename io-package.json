@@ -68,6 +68,7 @@
       "pl": "Adapter do odkurzaczy",
       "zh-cn": "胡佛设备适配器"
     },
+    "tier": 2,
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["hoover", "hon"],
     "license": "MIT",
