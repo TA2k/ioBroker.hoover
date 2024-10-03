@@ -71,12 +71,7 @@
     "tier": 2,
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["hoover", "hon"],
-    "license":"",
-    "licenseInformation": {
-    "type": "free",	
-    "text": "MIT License",
-    "url": "https://opensource.org/licenses/MIT"
-  },
+    "license":"MIT",
     "platform": "Javascript/Node.js",
     "icon": "hoover.png",
     "enabled": true,

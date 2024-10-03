@@ -7,13 +7,8 @@
     "email": "tombox2020@gmail.com"
   },
   "homepage": "https://github.com/TA2k/ioBroker.hoover",
-  "license":"",
-  "licenseInformation": {
-    "type": "free",	
-    "text": "MIT License",
-    "url": "https://opensource.org/licenses/MIT"
-  },
-
+  "license":"MIT",
+  
     "keywords": [
     "ioBroker",
     "hoover",
