@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "news": {
+      "0.1.3": {
+        "en": "updated dependencies",
+        "de": "Abhängigkeiten aktualisiert"
+      },
       "0.1.2": {
         "en": "Fix non mac devices",
         "de": "Fix nicht mac Geräte"
@@ -64,11 +68,14 @@
       "pl": "Adapter do odkurzaczy",
       "zh-cn": "胡佛设备适配器"
     },
+    "tier": 2,
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["hoover", "hon"],
-    "license": "MIT",
+    "licenseInformation": {
+    "text": "MIT License",
+    "url": "https://opensource.org/licenses/MIT"
+  },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "hoover.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.hoover/master/admin/hoover.png",
@@ -79,8 +86,8 @@
     "compact": true,
     "connectionType": "cloud",
     "dataSource": "poll",
-    "materialize": true,
     "adminUI": {
+      "enabled": true,
       "config": "json"
     },
     "plugins": {
@@ -90,7 +97,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=3.2.0"
+        "js-controller": ">=5.0.19"
       }
     ],
     "globalDependencies": [
