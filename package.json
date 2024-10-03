@@ -7,8 +7,9 @@
     "email": "tombox2020@gmail.com"
   },
   "homepage": "https://github.com/TA2k/ioBroker.hoover",
-  "license": "MIT",
-  "keywords": [
+  "license":"MIT",
+  
+    "keywords": [
     "ioBroker",
     "hoover",
     "hon"
