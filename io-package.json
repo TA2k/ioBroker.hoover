@@ -71,9 +71,11 @@
     "tier": 2,
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["hoover", "hon"],
-    "license": "MIT",
+    "licenseInformation": {
+    "text": "MIT License",
+    "url": "https://opensource.org/licenses/MIT"
+  }
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "hoover.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.hoover/master/admin/hoover.png",
@@ -84,8 +86,8 @@
     "compact": true,
     "connectionType": "cloud",
     "dataSource": "poll",
-    "materialize": true,
     "adminUI": {
+      "enabled": true,
       "config": "json"
     },
     "plugins": {
