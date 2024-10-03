@@ -273,6 +273,19 @@ AC Heizen
 
 ## Changelog
 
+### 0.1.3
+
+- (Speedbreaker) Updated dependencies
+
+### 0.1.2
+
+- (TA2k) Fix non mac devices
+
+### 0.1.1
+
+- (TA2k) Fix Login
+
+
 ### 0.0.7
 
 - (TA2k) add wizard app login
