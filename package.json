@@ -1,6 +1,6 @@
 {
   "name": "iobroker.hoover",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Adapter for hoover devices",
   "author": {
     "name": "TA2k",
@@ -17,7 +17,7 @@
     "url": "https://github.com/TA2k/ioBroker.hoover"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.0.6",
+    "@iobroker/adapter-core": "^3.1.6",
     "aws-iot-device-sdk": "^2.2.13",
     "axios": "^1.6.8",
     "http-cookie-agent": "^5.0.4",
@@ -26,14 +26,14 @@
     "tough-cookie": "^4.1.3"
   },
   "devDependencies": {
-    "@iobroker/testing": "^4.1.1",
+    "@iobroker/testing": "^4.1.3",
     "@types/node": "^20.12.7",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
   },
   "main": "main.js",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
