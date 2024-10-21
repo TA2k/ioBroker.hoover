@@ -62,13 +62,9 @@
       "pl": "Adapter do odkurzaczy",
       "zh-cn": "胡佛设备适配器"
     },
-    "authors": [
-      "TA2k <tombox2020@gmail.com>"
-    ],
-    "keywords": [
-      "hoover",
-      "hon"
-    ],
+    "tier": 2,
+    "authors": ["TA2k <tombox2020@gmail.com>"],
+    "keywords": ["hoover", "hon"],
     "license": "MIT",
     "platform": "Javascript/Node.js",
     "main": "main.js",
@@ -82,8 +78,8 @@
     "compact": true,
     "connectionType": "cloud",
     "dataSource": "poll",
-    "materialize": true,
     "adminUI": {
+      "enabled": true,
       "config": "json"
     },
     "plugins": {
@@ -93,7 +89,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=3.2.0"
+        "js-controller": ">=5.0.19"
       }
     ],
     "globalDependencies": [
@@ -102,12 +98,8 @@
       }
     ]
   },
-  "encryptedNative": [
-    "password"
-  ],
-  "protectedNative": [
-    "password"
-  ],
+  "encryptedNative": ["password"],
+  "protectedNative": ["password"],
   "native": {
     "username": "",
     "password": "",
