@@ -272,6 +272,9 @@ AC Heizen
 <https://forum.iobroker.net/topic/55667/test-adapter-hoover-hon>
 
 ## Changelog
+### 0.1.3 (2024-10-21)
+
+- fix for login
 
 ### 0.0.7
 
@@ -289,7 +292,7 @@ AC Heizen
 
 MIT License
 
-Copyright (c) 2022 TA2k <tombox2020@gmail.com>
+Copyright (c) 2022-2030 TA2k <tombox2020@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

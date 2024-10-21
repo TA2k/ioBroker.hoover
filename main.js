@@ -8,7 +8,7 @@
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
 const axios = require("axios").default;
-const Json2iob = require("./lib/json2iob");
+const Json2iob = require("json2iob");
 const crypto = require("crypto");
 const qs = require("qs");
 const tough = require("tough-cookie");
@@ -86,6 +86,27 @@ class Hoover extends utils.Adapter {
       }, 2 * 60 * 60 * 1000);
     }
   }
+
+  extractInputsAndFormUrl(html) {
+    const hiddenInputs = {};
+    let formUrl = html.split("<form")[1].split('action="')[1].split('"')[0];
+    formUrl = formUrl.replace(/&amp;/g, "&");
+    const inputs = html.split("<input");
+    for (const input of inputs) {
+      // if (input.includes('type="hidden"')) {
+      let name = input.split('id="')[1].split('"')[0];
+      if (input.includes('name="')) {
+        name = input.split('name="')[1].split('"')[0];
+      }
+      let value = "";
+      if (input.includes('value="')) {
+        value = input.split('value="')[1].split('"')[0];
+      }
+      hiddenInputs[name] = value;
+      // }
+    }
+    return { formUrl, hiddenInputs };
+  }
   async login() {
     let loginUrl =
       "https://account2.hon-smarthome.com/services/oauth2/authorize/expid_Login?response_type=token+id_token&client_id=3MVG9QDx8IX8nP5T2Ha8ofvlmjLZl5L_gvfbT9.HJvpHGKoAS_dcMN8LYpTSYeVFCraUnV.2Ag1Ki7m4znVO6&redirect_uri=hon%3A%2F%2Fmobilesdk%2Fdetect%2Foauth%2Fdone&display=touch&scope=api%20openid%20refresh_token%20web&nonce=b8f38cb9-26f0-4aed-95b4-aa504f5e1971";
@@ -122,16 +143,15 @@ class Hoover extends utils.Adapter {
     const initSession = qs.parse(initUrl.split("?")[1]);
     let fwurl = "https://he-accounts.force.com/SmartHome/s/login/?System=IoT_Mobile_App&RegistrationSubChannel=hOn";
     fwurl =
-      "https://account2.hon-smarthome.com/s/login/?display=touch&ec=302&inst=68&startURL=/setup/secur/RemoteAccessAuthorizationPage.apexp?source=" +
-      initSession.source +
-      "&display=touch&System=IoT_Mobile_App&RegistrationSubChannel=hOn";
+      "https://account2.hon-smarthome.com/NewhOnLogin?display=touch%2F&ec=302&startURL=%2F%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
+      initSession.source;
     if (this.config.type === "wizard") {
       fwurl =
         "https://haiereurope.my.site.com/HooverApp/login?display=touch&ec=302&inst=68&startURL=%2FHooverApp%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
         initSession.source +
         "%26display%3Dtouch";
     }
-    const fwuid = await this.requestClient({
+    const { formUrl, hiddenInputs } = await this.requestClient({
       method: "get",
       url: fwurl,
       headers: {
@@ -141,25 +161,17 @@ class Hoover extends utils.Adapter {
       },
     })
       .then((res) => {
-        this.log.debug(JSON.stringify(res.data));
-        let fwuid = res.headers.link;
-        if (fwuid) {
-          fwuid = decodeURIComponent(fwuid);
-
-          const idsJSON = JSON.parse("{" + fwuid.split("/{")[1].split("/app")[0]);
-          idsJSON.fwuid = fwuid.split("auraFW/javascript/")[1].split("/")[0];
-          return idsJSON;
-        }
+        this.log.debug(res.data);
+        return this.extractInputsAndFormUrl(res.data);
       })
       .catch((error) => {
         this.log.error("Login step #2 failed");
         this.log.error(error);
         error.response && this.log.error(JSON.stringify(error.response.data));
       });
-    this.log.debug(`fwuid: ${JSON.stringify(fwuid)}`);
-    let step01Url;
+
     if (this.config.type === "wizard") {
-      step01Url = await this.requestClient({
+      await this.requestClient({
         method: "post",
         url: "https://haiereurope.my.site.com/HooverApp/login",
         headers: {
@@ -226,58 +238,24 @@ class Hoover extends utils.Adapter {
           this.log.error(error);
           error.response && this.log.error(JSON.stringify(error.response.data));
         });
-    } else {
-      step01Url = await this.requestClient({
-        method: "post",
-        url: "https://account2.hon-smarthome.com/s/sfsites/aura?r=3&other.LightningLoginCustom.login=1",
-        headers: {
-          Accept: "*/*",
-          "Accept-Language": "de-de",
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-        },
-        data:
-          "message=%7B%22actions%22%3A%5B%7B%22id%22%3A%22106%3Ba%22%2C%22descriptor%22%3A%22apex%3A%2F%2FLightningLoginCustomController%2FACTION%24login%22%2C%22callingDescriptor%22%3A%22markup%3A%2F%2Fc%3AloginForm%22%2C%22params%22%3A%7B%22username%22%3A%22" +
-          this.config.username +
-          "%22%2C%22password%22%3A%22" +
-          this.config.password +
-          "%22%2C%22startUrl%22%3A%22%2Fsetup%2Fsecur%2FRemoteAccessAuthorizationPage.apexp%3Fsource%3D" +
-          initSession.source +
-          "%26display%3Dtouch%22%7D%7D%5D%7D&aura.context=" +
-          JSON.stringify(fwuid) +
-          "&aura.pageURI=%2Fs%2Flogin%2F%3Flanguage%3Dde%26startURL%3D%252Fsetup%252Fsecur%252FRemoteAccessAuthorizationPage.apexp%253Fsource%253D" +
-          initSession.source +
-          "%2526display%253Dtouch%26RegistrationSubChannel%3DhOn%26display%3Dtouch%26inst%3D68%26ec%3D302%26System%3DIoT_Mobile_App&aura.token=null",
-      })
-        .then((res) => {
-          this.log.debug(JSON.stringify(res.data));
-          if (res.data.events && res.data.events[0] && res.data.events[0].attributes && res.data.events[0].attributes) {
-            return res.data.events[0].attributes.values.url;
-          }
-          this.log.error("Missing step1 url");
-          this.log.error(JSON.stringify(res.data));
-        })
-        .catch((error) => {
-          this.log.error("Login step #3 failed");
-          this.log.error(error);
-          error.response && this.log.error(JSON.stringify(error.response.data));
-        });
-    }
-    if (!step01Url || this.config.type === "wizard") {
       return;
     }
+    hiddenInputs["j_id0:loginForm:username"] = this.config.username;
+    hiddenInputs["j_id0:loginForm:password"] = this.config.password;
     const step02Url = await this.requestClient({
-      method: "get",
-      url: step01Url,
+      method: "post",
+      url: formUrl,
       headers: {
         Accept: "*/*",
         "Accept-Language": "de-de",
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
       },
+      data: hiddenInputs,
     })
       .then((res) => {
         this.log.debug(JSON.stringify(res.data));
-        if (res.data.includes('window.location.replace("')) {
-          return res.data.split('window.location.replace("')[1].split('")')[0];
+        if (res.data.includes("window.location.replace('")) {
+          return res.data.split("window.location.replace('")[1].split("')")[0];
         }
         this.log.error("Missing step2 url");
         this.log.error(JSON.stringify(res.data));
@@ -302,8 +280,8 @@ class Hoover extends utils.Adapter {
     })
       .then((res) => {
         this.log.debug(JSON.stringify(res.data));
-        if (res.data.includes("window.location.replace('")) {
-          return res.data.split("window.location.replace('")[1].split("')")[0];
+        if (res.data.includes(`window.location.replace("`)) {
+          return res.data.split(`window.location.replace("`)[1].split(`")`)[0];
         }
         this.log.error("Login failed please logout and login in your hON and accept new terms");
         this.log.error(JSON.stringify(res.data));
@@ -316,10 +294,34 @@ class Hoover extends utils.Adapter {
     if (!step03Url) {
       return;
     }
-
+    const step03bUrl = await this.requestClient({
+      method: "get",
+      url: step03Url,
+      headers: {
+        Accept: "*/*",
+        "Accept-Language": "de-de",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+    })
+      .then((res) => {
+        this.log.debug(JSON.stringify(res.data));
+        if (res.data.includes(`window.location.replace('`)) {
+          return res.data.split(`window.location.replace('`)[1].split(`')`)[0];
+        }
+        this.log.error("Login failed please logout and login in your hON and accept new terms");
+        this.log.error(JSON.stringify(res.data));
+      })
+      .catch((error) => {
+        this.log.error("Login step #5 failed");
+        this.log.error(error);
+        error.response && this.log.error(JSON.stringify(error.response.data));
+      });
+    if (!step03bUrl) {
+      return;
+    }
     const step04Url = await this.requestClient({
       method: "get",
-      url: "https://account2.hon-smarthome.com" + step03Url,
+      url: "https://account2.hon-smarthome.com" + step03bUrl,
       headers: {
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
@@ -456,7 +458,6 @@ class Hoover extends utils.Adapter {
           if (this.config.type === "wizard") {
             id = device.id;
           }
-          this.log.info('Processing device "' + id + '"');
           this.deviceArray.push(device);
           let name = device.applianceTypeName || device.appliance_model;
           if (device.modelName) {
@@ -892,6 +893,7 @@ class Hoover extends utils.Adapter {
       this.refreshTokenInterval && clearInterval(this.refreshTokenInterval);
       callback();
     } catch (e) {
+      this.log.error(e);
       callback();
     }
   }
