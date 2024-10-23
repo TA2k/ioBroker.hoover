@@ -168,6 +168,7 @@ class Hoover extends utils.Adapter {
         this.log.error("Login step #2 failed");
         this.log.error(error);
         error.response && this.log.error(JSON.stringify(error.response.data));
+        return {};
       });
 
     if (this.config.type === "wizard") {
