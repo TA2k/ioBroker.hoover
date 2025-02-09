@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "hoover",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "news": {
+      "0.1.4": {
+        "en": "disable certificate check",
+        "de": "deaktivieren der zertifikatsprüfung",
+        "ru": "отключить проверку сертификата",
+        "pt": "desativar a verificação do certificado",
+        "nl": "certificaatcontrole uitschakelen",
+        "fr": "désactiver la vérification du certificat",
+        "it": "disabilitare il controllo del certificato",
+        "es": "verificación de certificados",
+        "pl": "kontrola certyfikatu wyłączenia",
+        "uk": "перевірка сертифікату",
+        "zh-cn": "禁用证书检查"
+      },
       "0.1.3": {
         "en": "fix for login",
         "de": "fix für anmeldung",
@@ -33,9 +46,6 @@
       },
       "0.0.5": {
         "en": "Fix connetction reconnect"
-      },
-      "0.0.4": {
-        "en": "fix token refresh"
       }
     },
     "titleLang": {
@@ -63,8 +73,13 @@
       "zh-cn": "胡佛设备适配器"
     },
     "tier": 2,
-    "authors": ["TA2k <tombox2020@gmail.com>"],
-    "keywords": ["hoover", "hon"],
+    "authors": [
+      "TA2k <tombox2020@gmail.com>"
+    ],
+    "keywords": [
+      "hoover",
+      "hon"
+    ],
     "license": "MIT",
     "platform": "Javascript/Node.js",
     "main": "main.js",
@@ -98,8 +113,12 @@
       }
     ]
   },
-  "encryptedNative": ["password"],
-  "protectedNative": ["password"],
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password"
+  ],
   "native": {
     "username": "",
     "password": "",

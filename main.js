@@ -33,6 +33,7 @@ class Hoover extends utils.Adapter {
     this.requestClient = axios.create({
       withCredentials: true,
       httpsAgent: new HttpsCookieAgent({
+        rejectUnauthorized: false,
         cookies: {
           jar: this.cookieJar,
         },
