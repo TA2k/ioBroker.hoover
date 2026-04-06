@@ -272,6 +272,9 @@ AC Heizen
 <https://forum.iobroker.net/topic/55667/test-adapter-hoover-hon>
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (iobroker-bot) Adapter requires node.js >= 20 now.
 ### 0.1.4 (2025-02-09)
 
 - disable certificate check
