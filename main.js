@@ -28,6 +28,9 @@ class Hoover extends utils.Adapter {
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
     this.deviceArray = [];
+    // Devices that returned a non-recoverable error (502 / invalid appliance type)
+    // are skipped until the adapter restarts to stop repeated error logging.
+    this.noUpdateDevices = new Set();
     this.json2iob = new Json2iob(this);
     this.cookieJar = new tough.CookieJar();
     this.requestClient = axios.create({
@@ -759,6 +762,9 @@ class Hoover extends utils.Adapter {
     };
     for (const device of this.deviceArray) {
       const id = device.macAddress || device.serialNumber;
+      if (this.noUpdateDevices.has(id)) {
+        continue;
+      }
       for (const element of statusArray) {
         let url = element.url.replace("$mac", id);
         url = url.replace("$type", device.applianceTypeName);
@@ -797,6 +803,16 @@ class Hoover extends utils.Adapter {
                   this.refreshToken();
                 }, 1000 * 60);
 
+                return;
+              }
+              const status = error.response.status;
+              const code = error.response.data && error.response.data.error && error.response.data.error.code;
+              // 502 and invalid appliance type (RC_IAT) are not recoverable for this device,
+              // so stop polling it until the adapter restarts to avoid repeated error logging.
+              if (status === 502 || code === "RC_IAT") {
+                this.noUpdateDevices.add(id);
+                this.log.info(`${id} returned status ${status}. Skipping updates until adapter restart.`);
+                this.log.debug(JSON.stringify(error.response.data));
                 return;
               }
             }
